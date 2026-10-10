@@ -34,7 +34,7 @@ This is the B2C wedge from `docs/research.md`. The B2B loyalty product comes lat
 
 ### Not in the MVP (later)
 
-- **v1.1:**
+- **v1.1 (PINFL, Wi-Fi and Link templates are done; the rest is still to do):**
   - templates: PINFL / "Hujjatlarim" (My documents), Wi-Fi, card number for transfers, Instagram/Telegram profile
   - share link and "made with" footer on the pass
 - **v1.2:** install/uninstall tracking via Apple `webServiceURL` (needs a database)
@@ -129,15 +129,14 @@ The UI follows WalletWallet's layout: one form under two wallet tabs.
 
 ```
 POST /api/passes/apple
-  body (multipart): title, label, value, barcodeFormat, barcodeValue, color, logo?
+  body (JSON, or form field `payload` holding the JSON):
+    { title, color, barcode?: {format, value} | null,
+      fields?: [{label, value}] (≤3), backNote?, logo?, icon? }
   → 200 application/vnd.apple.pkpass  (Content-Disposition: attachment; filename=pass.pkpass)
 
 POST /api/passes/google
-  body (json): same fields + logoUrl?
+  body (json): same as Apple; `logo` is the square image
   → 200 { saveUrl: "https://pay.google.com/gp/v/save/<jwt>" }
-
-POST /api/logo            (only needed for Google)
-  body: png ≤300KB → { url }  (content-hash key, immutable, cached)
 ```
 
 - **Validation:** the same zod schema on client and server. Length limits: title ≤ 30, label ≤ 20, value ≤ 64, barcode ≤ 512.

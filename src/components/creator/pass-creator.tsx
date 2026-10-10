@@ -1,12 +1,31 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { Camera, ImageIcon, Loader2, QrCode, ShieldCheck, Upload, X } from "lucide-react"
+import {
+  Camera,
+  CreditCard,
+  IdCard,
+  ImageIcon,
+  Link2,
+  Loader2,
+  QrCode,
+  ShieldCheck,
+  Upload,
+  Wifi,
+  X,
+} from "lucide-react"
 import { toast } from "sonner"
 
 import { CameraScanner } from "@/components/creator/camera-scanner"
 import { AppleIcon, GoogleIcon } from "@/components/creator/brand-icons"
 import { PassPreview } from "@/components/creator/pass-preview"
+import {
+  LinkInputs,
+  PinflInputs,
+  WifiInputs,
+  type PinflState,
+  type WifiState,
+} from "@/components/creator/template-inputs"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -26,6 +45,18 @@ import { detectCode, getDetector, type DetectedCode } from "@/lib/client/detect"
 import { flattenImage, processLogo, type ProcessedLogo } from "@/lib/client/image"
 import type { Dictionary } from "@/lib/i18n/dictionaries/en"
 import { LIMITS } from "@/lib/pass/schema"
+import {
+  checkPassport,
+  checkPinfl,
+  checkStir,
+  checkWifi,
+  displayLink,
+  normalizeLink,
+  wifiQr,
+  type PassBarcode,
+  type PassField,
+  type Template,
+} from "@/lib/templates"
 import { cn } from "@/lib/utils"
 
 const COLORS = ["#111111", "#1e3a8a", "#2563eb", "#16a34a", "#dc2626", "#ea580c", "#9333ea", "#f4f4f5"]
@@ -51,8 +82,23 @@ function submitApplePass(payload: object) {
   form.remove()
 }
 
+const TEMPLATE_ICONS = { card: CreditCard, pinfl: IdCard, wifi: Wifi, link: Link2 } satisfies Record<Template, unknown>
+
+type Draft = {
+  /** `null`: the pass has no barcode; `undefined`: the input is not valid yet. */
+  barcode: PassBarcode | null | undefined
+  fields: PassField[]
+  defaultTitle: string
+  backNote?: string
+  errors: Partial<Record<"barcode" | "pinfl" | "passport" | "stir" | "ssid" | "password" | "link", ErrorKey>>
+}
+
 export function PassCreator({ dict }: { dict: Dictionary }) {
   const [platform, setPlatform] = useState<Platform>("apple")
+  const [template, setTemplate] = useState<Template>("card")
+  const [pinfl, setPinfl] = useState<PinflState>({ pinfl: "", passport: "", stir: "", barcode: false })
+  const [wifi, setWifi] = useState<WifiState>({ ssid: "", password: "", security: "WPA" })
+  const [link, setLink] = useState("")
   const [barcode, setBarcode] = useState("")
   const [format, setFormat] = useState<BarcodeFormat>("qr")
   const [formatTouched, setFormatTouched] = useState(false)
@@ -77,9 +123,66 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
     })
   }, [])
 
-  const barcodeCheck = validateBarcode(format, barcode)
-  const barcodeError = showErrors && !barcodeCheck.ok ? dict.errors[barcodeCheck.error] : undefined
-  const titleError = showErrors && !title.trim() ? dict.errors.titleRequired : undefined
+  const draft = buildDraft()
+  const effectiveTitle = title.trim() || draft.defaultTitle
+  const errorText = (key: keyof Draft["errors"]) =>
+    showErrors && draft.errors[key] ? dict.errors[draft.errors[key]] : undefined
+  const titleError = showErrors && !effectiveTitle ? dict.errors.titleRequired : undefined
+
+  function buildDraft(): Draft {
+    switch (template) {
+      case "card": {
+        const check = validateBarcode(format, barcode)
+        return {
+          barcode: check.ok ? { format, value: check.value } : undefined,
+          fields: value.trim() ? [{ label: label.trim(), value: value.trim() }] : [],
+          defaultTitle: "",
+          errors: check.ok ? {} : { barcode: check.error },
+        }
+      }
+      case "pinfl": {
+        const p = checkPinfl(pinfl.pinfl)
+        const passport = checkPassport(pinfl.passport)
+        const stir = checkStir(pinfl.stir)
+        const fields = [
+          ...(p.value ? [{ label: dict.pinfl.fieldPinfl, value: p.value }] : []),
+          ...(passport.value ? [{ label: dict.pinfl.fieldPassport, value: passport.value }] : []),
+          ...(stir.value ? [{ label: dict.pinfl.fieldStir, value: stir.value }] : []),
+        ]
+        return {
+          barcode: !pinfl.barcode ? null : p.error ? undefined : { format: "code128", value: p.value },
+          fields,
+          defaultTitle: dict.pinfl.defaultTitle,
+          backNote: dict.pinfl.note,
+          errors: { pinfl: p.error, passport: passport.error, stir: stir.error },
+        }
+      }
+      case "wifi": {
+        const error = checkWifi(wifi.ssid, wifi.password, wifi.security)
+        const hasPassword = wifi.security !== "nopass" && wifi.password
+        return {
+          barcode: wifi.ssid.trim()
+            ? { format: "qr", value: wifiQr(wifi.ssid, wifi.password, wifi.security) }
+            : undefined,
+          fields: [
+            ...(wifi.ssid.trim() ? [{ label: dict.wifi.fieldNetwork, value: wifi.ssid }] : []),
+            ...(hasPassword ? [{ label: dict.wifi.fieldPassword, value: wifi.password }] : []),
+          ],
+          defaultTitle: dict.wifi.defaultTitle,
+          errors: error === "ssidRequired" ? { ssid: error } : error ? { password: error } : {},
+        }
+      }
+      case "link": {
+        const url = normalizeLink(link)
+        return {
+          barcode: url ? { format: "qr", value: url } : undefined,
+          fields: url ? [{ label: dict.link.fieldLink, value: displayLink(url) }] : [],
+          defaultTitle: url ? new URL(url).hostname.replace(/^www\./, "") : "",
+          errors: url ? {} : { link: "linkInvalid" },
+        }
+      }
+    }
+  }
 
   const changePlatform = (next: Platform) => {
     const p = next
@@ -94,7 +197,7 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
       setFormatTouched(true)
       toast.success(dict.code.detected.replace("{format}", FORMAT_LABELS[code.format]))
     },
-    [platform, dict.code.detected]
+    [platform, dict.code.detected],
   )
 
   const onBarcodeChange = (next: string) => {
@@ -129,14 +232,19 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
 
   const onSubmit = async () => {
     setShowErrors(true)
-    if (!barcodeCheck.ok || !title.trim()) return
+    const hasErrors = Object.values(draft.errors).some(Boolean)
+    if (hasErrors || draft.barcode === undefined || !effectiveTitle) return
 
-    const base = { barcodeFormat: format, barcodeValue: barcodeCheck.value, title, label, value, color }
+    const base = {
+      barcode: draft.barcode,
+      title: effectiveTitle,
+      fields: draft.fields,
+      backNote: draft.backNote,
+      color,
+    }
     // Apple shows a wide logo plus a square icon; Google masks its logo to a circle.
     const payload =
-      platform === "apple"
-        ? { ...base, logo: logo?.logo, icon: logo?.icon }
-        : { ...base, logo: logo?.icon }
+      platform === "apple" ? { ...base, logo: logo?.logo, icon: logo?.icon } : { ...base, logo: logo?.icon }
 
     setBusy(true)
     try {
@@ -175,91 +283,126 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
           </TabsList>
         </Tabs>
 
+        <Tabs value={template} onValueChange={(t: Template) => setTemplate(t)}>
+          <TabsList variant="line" className="w-full">
+            {(Object.keys(TEMPLATE_ICONS) as Template[]).map((t) => {
+              const Icon = TEMPLATE_ICONS[t]
+              return (
+                <TabsTrigger key={t} value={t} className="px-1 max-sm:[&_svg]:hidden">
+                  <Icon />
+                  {dict.templates[t]}
+                </TabsTrigger>
+              )
+            })}
+          </TabsList>
+        </Tabs>
+
+        {template === "pinfl" && (
+          <PinflInputs
+            value={pinfl}
+            onChange={setPinfl}
+            dict={dict}
+            errors={{ pinfl: errorText("pinfl"), passport: errorText("passport"), stir: errorText("stir") }}
+          />
+        )}
+        {template === "wifi" && (
+          <WifiInputs
+            value={wifi}
+            onChange={setWifi}
+            dict={dict}
+            errors={{ ssid: errorText("ssid"), password: errorText("password") }}
+          />
+        )}
+        {template === "link" && <LinkInputs value={link} onChange={setLink} dict={dict} error={errorText("link")} />}
+
         {/* Code input */}
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="text-sm font-medium">{dict.code.heading}</h2>
-            <span className="flex items-center gap-1 font-mono text-xs text-muted-foreground">
-              <ShieldCheck className="size-3.5" />
-              {dict.code.processedLocally}
-            </span>
-          </div>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={() => {
-                getDetector()
-                setScannerOpen(true)
-              }}
-            >
-              <Camera />
-              {dict.code.scan}
-            </Button>
-            <Button variant="outline" size="lg" onClick={() => imageInput.current?.click()}>
-              <Upload />
-              {dict.code.upload}
-            </Button>
-            <input
-              ref={imageInput}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => {
-                onImage(e.target.files?.[0])
-                e.target.value = ""
-              }}
-            />
-          </div>
-
-          <div className="flex items-center gap-3">
-            <Separator className="flex-1" />
-            <span className="font-mono text-xs tracking-wider text-muted-foreground uppercase">
-              {dict.code.orManual}
-            </span>
-            <Separator className="flex-1" />
-          </div>
-
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_200px]">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="barcode">{dict.code.dataLabel}</Label>
-              <Input
-                id="barcode"
-                value={barcode}
-                maxLength={LIMITS.barcode}
-                placeholder={dict.code.dataPlaceholder}
-                autoComplete="off"
-                aria-invalid={!!barcodeError}
-                onChange={(e) => onBarcodeChange(e.target.value)}
-              />
+        {template === "card" && (
+          <div className="flex flex-col gap-4">
+            <div className="flex items-center justify-between gap-2">
+              <h2 className="text-sm font-medium">{dict.code.heading}</h2>
+              <span className="flex items-center gap-1 font-mono text-xs text-muted-foreground">
+                <ShieldCheck className="size-3.5" />
+                {dict.code.processedLocally}
+              </span>
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="format">{dict.code.formatLabel}</Label>
-              <Select
-                value={format}
-                onValueChange={(f) => {
-                  setFormat(f as BarcodeFormat)
-                  setFormatTouched(true)
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => {
+                  getDetector()
+                  setScannerOpen(true)
                 }}
               >
-                <SelectTrigger id="format" className="w-full justify-start [&>svg:last-child]:ml-auto">
-                  <QrCode className="text-muted-foreground" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {PLATFORM_FORMATS[platform].map((f) => (
-                    <SelectItem key={f} value={f}>
-                      {FORMAT_LABELS[f]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                <Camera />
+                {dict.code.scan}
+              </Button>
+              <Button variant="outline" size="lg" onClick={() => imageInput.current?.click()}>
+                <Upload />
+                {dict.code.upload}
+              </Button>
+              <input
+                ref={imageInput}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  onImage(e.target.files?.[0])
+                  e.target.value = ""
+                }}
+              />
             </div>
+
+            <div className="flex items-center gap-3">
+              <Separator className="flex-1" />
+              <span className="font-mono text-xs tracking-wider text-muted-foreground uppercase">
+                {dict.code.orManual}
+              </span>
+              <Separator className="flex-1" />
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_200px]">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="barcode">{dict.code.dataLabel}</Label>
+                <Input
+                  id="barcode"
+                  value={barcode}
+                  maxLength={LIMITS.barcode}
+                  placeholder={dict.code.dataPlaceholder}
+                  autoComplete="off"
+                  aria-invalid={!!errorText("barcode")}
+                  onChange={(e) => onBarcodeChange(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="format">{dict.code.formatLabel}</Label>
+                <Select
+                  value={format}
+                  onValueChange={(f) => {
+                    setFormat(f as BarcodeFormat)
+                    setFormatTouched(true)
+                  }}
+                >
+                  <SelectTrigger id="format" className="w-full justify-start [&>svg:last-child]:ml-auto">
+                    <QrCode className="text-muted-foreground" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PLATFORM_FORMATS[platform].map((f) => (
+                      <SelectItem key={f} value={f}>
+                        {FORMAT_LABELS[f]}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <p className={cn("font-mono text-xs", errorText("barcode") ? "text-destructive" : "text-muted-foreground")}>
+              {errorText("barcode") ??
+                (platform === "apple" && format === "ean13" ? dict.code.ean13Apple : dict.code.formatHint)}
+            </p>
           </div>
-          <p className={cn("font-mono text-xs", barcodeError ? "text-destructive" : "text-muted-foreground")}>
-            {barcodeError ?? (platform === "apple" && format === "ean13" ? dict.code.ean13Apple : dict.code.formatHint)}
-          </p>
-        </div>
+        )}
 
         <Separator />
 
@@ -271,7 +414,7 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
               id="title"
               value={title}
               maxLength={LIMITS.title}
-              placeholder={dict.design.titlePlaceholder}
+              placeholder={draft.defaultTitle || dict.design.titlePlaceholder}
               aria-invalid={!!titleError}
               onChange={(e) => setTitle(e.target.value)}
             />
@@ -313,34 +456,36 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
             <p className="font-mono text-xs text-muted-foreground">{dict.design.logoHint}</p>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="label">
-                {dict.design.labelLabel}
-                <span className="font-normal text-muted-foreground">{dict.design.optional}</span>
-              </Label>
-              <Input
-                id="label"
-                value={label}
-                maxLength={LIMITS.label}
-                placeholder={dict.design.labelPlaceholder}
-                onChange={(e) => setLabel(e.target.value)}
-              />
+          {template === "card" && (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="label">
+                  {dict.design.labelLabel}
+                  <span className="font-normal text-muted-foreground">{dict.design.optional}</span>
+                </Label>
+                <Input
+                  id="label"
+                  value={label}
+                  maxLength={LIMITS.label}
+                  placeholder={dict.design.labelPlaceholder}
+                  onChange={(e) => setLabel(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="value">
+                  {dict.design.valueLabel}
+                  <span className="font-normal text-muted-foreground">{dict.design.optional}</span>
+                </Label>
+                <Input
+                  id="value"
+                  value={value}
+                  maxLength={LIMITS.value}
+                  placeholder={dict.design.valuePlaceholder}
+                  onChange={(e) => setValue(e.target.value)}
+                />
+              </div>
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="value">
-                {dict.design.valueLabel}
-                <span className="font-normal text-muted-foreground">{dict.design.optional}</span>
-              </Label>
-              <Input
-                id="value"
-                value={value}
-                maxLength={LIMITS.value}
-                placeholder={dict.design.valuePlaceholder}
-                onChange={(e) => setValue(e.target.value)}
-              />
-            </div>
-          </div>
+          )}
 
           <div className="flex flex-col gap-2">
             <Label>{dict.design.colorLabel}</Label>
@@ -354,7 +499,7 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
                   onClick={() => setColor(c)}
                   className={cn(
                     "size-7 cursor-pointer rounded-full border shadow-xs sm:size-8 outline-offset-2 transition",
-                    color === c && "outline-2 outline-foreground"
+                    color === c && "outline-2 outline-foreground",
                   )}
                   style={{ backgroundColor: c }}
                 />
@@ -362,7 +507,7 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
               <label
                 className={cn(
                   "relative flex size-7 cursor-pointer sm:size-8 items-center justify-center overflow-hidden rounded-full border bg-[conic-gradient(red,yellow,lime,cyan,blue,magenta,red)] outline-offset-2",
-                  !COLORS.includes(color) && "outline-2 outline-foreground"
+                  !COLORS.includes(color) && "outline-2 outline-foreground",
                 )}
                 title={dict.design.customColor}
               >
@@ -385,14 +530,13 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
           <h2 className="text-sm font-medium">{dict.preview.heading}</h2>
           <PassPreview
             platform={platform}
-            title={title}
-            label={label}
-            value={value}
+            title={effectiveTitle}
+            fields={draft.fields}
             color={color}
             logo={logo?.logo}
             icon={logo?.icon}
-            format={format}
-            barcode={barcodeCheck.ok ? barcodeCheck.value : ""}
+            barcode={draft.barcode}
+            placeholderFormat={template === "card" ? format : template === "pinfl" ? "code128" : "qr"}
           />
 
           {platform === "apple" && inAppBrowser && (
@@ -417,12 +561,7 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
         </div>
       </div>
 
-      <CameraScanner
-        open={scannerOpen}
-        onOpenChange={setScannerOpen}
-        onDetected={applyDetected}
-        dict={dict.code}
-      />
+      <CameraScanner open={scannerOpen} onOpenChange={setScannerOpen} onDetected={applyDetected} dict={dict.code} />
     </section>
   )
 }

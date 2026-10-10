@@ -49,9 +49,16 @@ export async function createApplePass(input: PassRequest): Promise<Buffer> {
   if (!config) throw new AppleNotConfiguredError("Apple Wallet signing is not configured")
 
   const colors = passColors(input.color)
-  const fields = input.value
-    ? [{ key: "value", label: input.label || undefined, value: input.value }]
-    : []
+  const fields = input.fields.map((f, i) => ({ key: `f${i}`, label: f.label || undefined, value: f.value }))
+  const backFields = [
+    ...(input.backNote ? [{ key: "note", label: input.title, value: input.backNote }] : []),
+    {
+      key: "madeWith",
+      label: "Wallet",
+      value: `Created with ${SITE_HOST}`,
+      attributedValue: `Created with <a href="https://${SITE_HOST}">${SITE_HOST}</a>`,
+    },
+  ]
 
   const passJson = {
     formatVersion: 1,
@@ -64,17 +71,11 @@ export async function createApplePass(input: PassRequest): Promise<Buffer> {
     backgroundColor: colors.background,
     foregroundColor: colors.foreground,
     labelColor: colors.label,
-    storeCard: {
-      secondaryFields: fields,
-      backFields: [
-        {
-          key: "madeWith",
-          label: "Wallet",
-          value: `Created with ${SITE_HOST}`,
-          attributedValue: `Created with <a href="https://${SITE_HOST}">${SITE_HOST}</a>`,
-        },
-      ],
-    },
+    // With several fields the first (e.g. PINFL, network name) is shown large.
+    storeCard:
+      fields.length > 1
+        ? { primaryFields: fields.slice(0, 1), secondaryFields: fields.slice(1), backFields }
+        : { secondaryFields: fields, backFields },
   }
 
   const icon = input.icon ? decodePngDataUrl(input.icon) : solidPng(87, hexToRgb(input.color))
@@ -97,6 +98,6 @@ export async function createApplePass(input: PassRequest): Promise<Buffer> {
     signerKey: config.signerKey,
     signerKeyPassphrase: config.signerKeyPassphrase,
   })
-  pass.setBarcodes(...appleBarcodes(input.barcodeFormat, input.barcodeValue))
+  if (input.barcode) pass.setBarcodes(...appleBarcodes(input.barcode.format, input.barcode.value))
   return pass.getAsBuffer()
 }

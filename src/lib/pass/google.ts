@@ -84,23 +84,33 @@ export async function createGoogleSaveUrl(input: PassRequest): Promise<string> {
   if (!config) throw new GoogleNotConfiguredError("Google Wallet is not configured")
 
   const [logoUrl] = await Promise.all([hostLogo(input.logo), ensureClass(config)])
-  const showAltText = !TWO_D_FORMATS.includes(input.barcodeFormat) && input.barcodeValue.length <= 40
+  const [first, ...rest] = input.fields
+  const barcode = input.barcode
+  const showAltText = barcode && !TWO_D_FORMATS.includes(barcode.format) && barcode.value.length <= 40
 
   const object = {
     id: `${config.issuerId}.${randomUUID()}`,
     classId: `${config.issuerId}.${config.classSuffix}`,
     state: "ACTIVE",
     cardTitle: text(input.title),
-    header: text(input.value || input.title),
-    ...(input.value && input.label ? { subheader: text(input.label) } : {}),
+    header: text(first?.value || input.title),
+    ...(first?.label ? { subheader: text(first.label) } : {}),
     hexBackgroundColor: input.color,
     ...(logoUrl ? { logo: { sourceUri: { uri: logoUrl } } } : {}),
-    barcode: {
-      type: GOOGLE_BARCODE_TYPES[input.barcodeFormat],
-      value: input.barcodeValue,
-      ...(showAltText ? { alternateText: input.barcodeValue } : {}),
-    },
-    textModulesData: [{ id: "made_with", header: "Wallet", body: `Created with ${SITE_HOST}` }],
+    ...(barcode
+      ? {
+          barcode: {
+            type: GOOGLE_BARCODE_TYPES[barcode.format],
+            value: barcode.value,
+            ...(showAltText ? { alternateText: barcode.value } : {}),
+          },
+        }
+      : {}),
+    textModulesData: [
+      ...rest.map((f, i) => ({ id: `f${i + 1}`, header: f.label, body: f.value })),
+      ...(input.backNote ? [{ id: "note", header: input.title, body: input.backNote }] : []),
+      { id: "made_with", header: "Wallet", body: `Created with ${SITE_HOST}` },
+    ],
   }
 
   await apiClient(config).request({ url: `${API}/genericObject`, method: "POST", data: object })
