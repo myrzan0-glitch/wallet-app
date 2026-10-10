@@ -62,7 +62,7 @@ export function PassPreview({ platform, title, label, value, color, logo, icon, 
   if (platform === "google") {
     return (
       <div
-        className={cn("mx-auto w-full max-w-[340px] overflow-hidden rounded-3xl p-5 shadow-lg", dark ? "text-white" : "text-neutral-900")}
+        className={cn("mx-auto w-full max-w-[340px] overflow-hidden rounded-3xl p-5 shadow-lg ring-1 ring-black/5 dark:ring-white/15", dark ? "text-white" : "text-neutral-900")}
         style={{ backgroundColor: color }}
       >
         <div className="flex items-center gap-3">
@@ -87,7 +87,7 @@ export function PassPreview({ platform, title, label, value, color, logo, icon, 
 
   return (
     <div
-      className={cn("mx-auto w-full max-w-[340px] overflow-hidden rounded-2xl p-4 shadow-lg", dark ? "text-white" : "text-neutral-900")}
+      className={cn("mx-auto w-full max-w-[340px] overflow-hidden rounded-2xl p-4 shadow-lg ring-1 ring-black/5 dark:ring-white/15", dark ? "text-white" : "text-neutral-900")}
       style={{ backgroundColor: color }}
     >
       <div className="flex h-10 items-center gap-2">

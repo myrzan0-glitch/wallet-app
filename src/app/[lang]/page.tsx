@@ -2,6 +2,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import { PassCreator } from "@/components/creator/pass-creator"
+import { ModeToggle } from "@/components/mode-toggle"
 import { LOCALES, LOCALE_NAMES, isLocale } from "@/lib/i18n/config"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 import { cn } from "@/lib/utils"
@@ -15,7 +16,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
     <main className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-10 px-4 py-8 sm:py-14">
       <header className="flex items-center justify-between gap-4">
         <span className="font-mono text-sm font-medium tracking-tight">wallet.myrzan</span>
-        <nav className="flex gap-1 font-mono text-xs">
+        <nav className="flex items-center gap-1 font-mono text-xs">
           {LOCALES.map((l) => (
             <Link
               key={l}
@@ -29,6 +30,7 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
               {LOCALE_NAMES[l]}
             </Link>
           ))}
+          <ModeToggle dict={dict.theme} />
         </nav>
       </header>
 

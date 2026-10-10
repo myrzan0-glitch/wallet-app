@@ -15,6 +15,7 @@ const uz: Dictionary = {
       "Apple kartasini yuklab oling yoki Google Wallet havolasini oching.",
     ],
   },
+  theme: { toggle: "Mavzuni almashtirish", light: "Yorug‘", dark: "Qorong‘i", system: "Tizim" },
   tabs: { apple: "Apple Wallet", google: "Google Wallet" },
   code: {
     heading: "Kodni skanerlang yoki yuklang",
