@@ -7,7 +7,7 @@ import { toast } from "sonner"
 import { COLORS } from "@/components/creator/state"
 import { FormField } from "@/components/creator/template-inputs"
 import { Button } from "@/components/ui/button"
-import { Field, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field"
+import { Field, FieldLabel, FieldTitle } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { processLogo, type ProcessedLogo } from "@/lib/client/image"
@@ -89,13 +89,13 @@ export function DesignInputs(props: Props) {
           />
         </Field>
 
-        <FieldSet className="w-auto gap-3">
-          <FieldLegend variant="label" className="mb-0">
-            {dict.design.colorLabel}
-          </FieldLegend>
-          <div className="flex flex-wrap items-center gap-2">
+        {/* Same Field spacing as the logo; a fieldset legend would ignore the flex gap. */}
+        <Field className="w-auto">
+          <FieldTitle id="color-label">{dict.design.colorLabel}</FieldTitle>
+          <div className="flex min-h-9 flex-wrap items-center gap-2">
             <ToggleGroup
               type="single"
+              aria-labelledby="color-label"
               spacing={2}
               className="flex-wrap"
               value={isCustomColor ? "" : props.color}
@@ -128,7 +128,7 @@ export function DesignInputs(props: Props) {
               />
             </label>
           </div>
-        </FieldSet>
+        </Field>
       </div>
     </div>
   )
