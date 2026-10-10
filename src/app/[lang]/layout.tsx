@@ -8,8 +8,8 @@ import { LOCALES, isLocale } from "@/lib/i18n/config"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 import "../globals.css"
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin", "cyrillic"] })
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin", "cyrillic"] })
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin", "cyrillic", "cyrillic-ext"] })
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin", "cyrillic", "cyrillic-ext"] })
 
 export const viewport: Viewport = {
   themeColor: [

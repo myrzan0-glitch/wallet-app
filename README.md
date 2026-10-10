@@ -1,7 +1,7 @@
 # wallet.myrzan.com
 
 Free web tool that turns any barcode or QR code into an **Apple Wallet** or
-**Google Wallet** pass. Built for Uzbekistan first (UI in O‘zbekcha, Русский, English).
+**Google Wallet** pass. Built for Uzbekistan first (UI in O‘zbekcha, Русский, Қазақша, English).
 
 - **Research:** [`docs/research.md`](docs/research.md)
 - **MVP plan:** [`docs/mvp-plan.md`](docs/mvp-plan.md)
@@ -36,7 +36,7 @@ src/app/api/passes/google    POST → { saveUrl }
 src/components/creator/      form, camera scanner, live preview
 src/lib/barcode/formats.ts   formats, validation (EAN/UPC checksums), wallet mapping
 src/lib/pass/                schema, Apple + Google pass builders, config
-src/lib/i18n/                uz / ru / en dictionaries
+src/lib/i18n/                uz / ru / kk / en dictionaries
 ```
 
 ## Deploy (Vercel + wallet.myrzan.com)
