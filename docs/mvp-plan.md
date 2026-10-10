@@ -1,6 +1,6 @@
 # MVP Plan: Web Pass Creator (Uzbekistan first)
 
-*Status: draft for review. Last updated 2026-10-10.*
+*Status: M0–M3 code done (UI, scanning, Apple signing). Waiting on Apple/Google credentials and deploy. Last updated 2026-10-10.*
 
 ## 1. Goal
 
@@ -46,29 +46,32 @@ This is the B2C wedge from `docs/research.md`. The B2B loyalty product comes lat
 
 ## 3. User flow
 
+The UI follows WalletWallet's layout: one form under two wallet tabs.
+
 ```
-┌──────────────── Step 1: Code ─────────────────┐
-│ [ 📷 Scan ] [ 🖼 Upload ] [ ⌨️ Type ]  (Tabs)  │
-│  → detected: EAN-13 · 4780000123456  ✓        │
-└───────────────────────────────────────────────┘
-┌──────────────── Step 2: Design ───────────────┐
-│ Title      [ Korzinka          ]              │
-│ Label      [ Card number       ]              │
-│ Value      [ 4780000123456     ]              │
-│ Colour     ● ● ● ● ● ● [custom]               │
-│ Logo       [ upload ]                         │
-│                      ┌──── live preview ────┐ │
-│                      │ LOGO  Korzinka       │ │
-│                      │ Card number          │ │
-│                      │ 4780000123456        │ │
-│                      │ ║║│║║│║│║║│║║         │ │
-│                      └──────────────────────┘ │
-└───────────────────────────────────────────────┘
-┌──────────────── Step 3: Add ──────────────────┐
-│ [  Add to Apple Wallet ] [ Add to Google Wallet]│
-│ (the button for the detected OS is shown first)│
+┌───────────────────────┬───────────────────────┐
+│     Apple Wallet     │     G Google Wallet   │  ← tab chosen from the device (Android → Google)
+├───────────────────────┴───────────────────────┤
+│ Scan or Upload Code              🛡 Processed locally │
+│ [ 📷 Scan with Camera ]  [ ⇪ Upload Image ]   │
+│ ──────────── OR ENTER MANUALLY ────────────   │
+│ Barcode Data [ 4780000123454 ]  Format [EAN-13▾]│
+│ Pass Title [ Korzinka ]                       │
+│ Pass Logo (Optional) [ Upload Logo ]          │
+│ Label [ Card number ]   Value [ 12345 ]       │
+│ Color ● ● ● ● ● ● ● ● 🌈                       │
+│ Preview  ┌──────────────────────┐              │
+│          │ Korzinka             │              │
+│          │ CARD NUMBER 12345    │              │
+│          │ ║║│║║│║│║║│║║         │              │
+│          └──────────────────────┘              │
+│ [  Add to Apple Wallet ]                      │
 └───────────────────────────────────────────────┘
 ```
+
+**Behaviour:**
+- The form state is shared between the tabs. Switching tabs maps the chosen format to one the wallet supports.
+- The format is auto-detected from a scan or upload, and guessed from typed input until the user picks one.
 
 **Edge cases to handle:**
 
