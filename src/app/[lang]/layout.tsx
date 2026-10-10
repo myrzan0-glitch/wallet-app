@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Geist_Mono, Inter } from "next/font/google"
 import { notFound } from "next/navigation"
 
+import { Analytics } from "@/components/analytics"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
 import { LOCALES, isLocale } from "@/lib/i18n/config"
@@ -49,6 +50,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
           {children}
           <Toaster position="top-center" />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )
