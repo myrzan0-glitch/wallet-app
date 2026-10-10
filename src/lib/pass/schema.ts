@@ -7,6 +7,8 @@ export const LIMITS = {
   label: 24,
   value: 64,
   barcode: 512,
+  fields: 3,
+  backNote: 300,
   /** Max decoded PNG size for logo / icon. */
   imageBytes: 300 * 1024,
 } as const
@@ -16,24 +18,31 @@ const pngDataUrl = z
   .regex(/^data:image\/png;base64,[A-Za-z0-9+/=]+$/, "Expected a PNG data URL")
   .refine((s) => (s.length - "data:image/png;base64,".length) * 0.75 <= LIMITS.imageBytes, "Image too large")
 
+const fieldSchema = z.object({
+  label: z.string().trim().max(LIMITS.label).default(""),
+  value: z.string().trim().min(1).max(LIMITS.value),
+})
+
 export const passRequestSchema = z
   .object({
-    barcodeFormat: z.enum(BARCODE_FORMATS),
-    barcodeValue: z.string().min(1).max(LIMITS.barcode),
+    barcode: z
+      .object({ format: z.enum(BARCODE_FORMATS), value: z.string().min(1).max(LIMITS.barcode) })
+      .nullish(),
     title: z.string().trim().min(1).max(LIMITS.title),
-    label: z.string().trim().max(LIMITS.label).default(""),
-    value: z.string().trim().max(LIMITS.value).default(""),
+    fields: z.array(fieldSchema).max(LIMITS.fields).default([]),
+    backNote: z.string().trim().max(LIMITS.backNote).optional(),
     color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
     logo: pngDataUrl.optional(),
     icon: pngDataUrl.optional(),
   })
   .transform((data, ctx) => {
-    const result = validateBarcode(data.barcodeFormat, data.barcodeValue)
+    if (!data.barcode) return { ...data, barcode: null }
+    const result = validateBarcode(data.barcode.format, data.barcode.value)
     if (!result.ok) {
-      ctx.addIssue({ code: "custom", path: ["barcodeValue"], message: result.error })
+      ctx.addIssue({ code: "custom", path: ["barcode", "value"], message: result.error })
       return z.NEVER
     }
-    return { ...data, barcodeValue: result.value }
+    return { ...data, barcode: { format: data.barcode.format, value: result.value } }
   })
 
 export type PassRequest = z.output<typeof passRequestSchema>
