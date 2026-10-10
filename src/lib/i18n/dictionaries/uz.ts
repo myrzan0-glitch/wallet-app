@@ -7,13 +7,8 @@ const uz: Dictionary = {
       "Sodiqlik, a’zolik va sovg‘a kartalaridagi shtrix-kodlarni bir necha soniyada Apple Wallet va Google Wallet kartalariga aylantiring. Bepul, ro‘yxatdan o‘tmasdan.",
   },
   hero: {
-    tagline:
-      "Plastik kartalardagi shtrix-kodlarni Apple Wallet va Google Wallet uchun raqamli kartalarga aylantiruvchi oddiy vosita. Mutlaqo bepul va to‘g‘ridan-to‘g‘ri brauzeringizda ishlaydi.",
-    steps: [
-      "Sodiqlik yoki a’zolik kartangizning shtrix-kod ma’lumotlarini kiriting.",
-      "Karta ko‘rinishi va nomini sozlang.",
-      "Apple kartasini yuklab oling yoki Google Wallet havolasini oching.",
-    ],
+    title: "Istalgan karta, kod yoki havolani telefon hamyoniga qo‘shing",
+    subtitle: "Sodiqlik kartalari, JShShIR, Wi-Fi va havolalar — Apple Wallet va Google Wallet’ga. Bepul, ro‘yxatdan o‘tmasdan.",
   },
   theme: { toggle: "Mavzuni almashtirish", light: "Yorug‘", dark: "Qorong‘i", system: "Tizim" },
   tabs: { apple: "Apple Wallet", google: "Google Wallet" },
@@ -24,7 +19,6 @@ const uz: Dictionary = {
     link: "Havola",
   },
   pinfl: {
-    heading: "Hujjatlarim",
     privacy: "Ma’lumotlar faqat kartaning o‘zida saqlanadi — biz ularni saqlamaymiz. Telefoningizni ochgan har kim ularni ko‘rishi mumkin, shuning uchun faqat keraklisini qo‘shing.",
     pinflLabel: "JShShIR (14 ta raqam)",
     passportLabel: "Pasport seriyasi va raqami",
@@ -37,7 +31,6 @@ const uz: Dictionary = {
     note: "Rasmiy hujjat emas. Egasi tomonidan qulaylik uchun yaratilgan.",
   },
   wifi: {
-    heading: "Wi-Fi tarmog‘i",
     ssidLabel: "Tarmoq nomi (SSID)",
     ssidPlaceholder: "Cafe_WiFi",
     passwordLabel: "Parol",
@@ -51,7 +44,6 @@ const uz: Dictionary = {
     defaultTitle: "Wi-Fi",
   },
   link: {
-    heading: "Havola",
     urlLabel: "Havola (URL)",
     urlPlaceholder: "instagram.com/dokonim yoki @telegram",
     hint: "Sayt, Instagram, Telegram yoki istalgan havola — QR kod uni ochadi.",
@@ -75,6 +67,9 @@ const uz: Dictionary = {
     cancel: "Bekor qilish",
     ean13Apple:
       "iOS 27 va undan yangi iPhone’larda EAN-13 o‘zicha ko‘rsatiladi; eskiroq iPhone’larda xuddi shu raqam Code 128 formatida bo‘ladi.",
+    formatAuto: "Format: {format}",
+    formatChange: "O‘zgartirish",
+    reading: "O‘qilmoqda…",
   },
   design: {
     titleLabel: "Karta nomi",
@@ -83,7 +78,6 @@ const uz: Dictionary = {
     optional: "(ixtiyoriy)",
     uploadLogo: "Logotip yuklash",
     removeLogo: "O‘chirish",
-    logoHint: "PNG formatiga o‘tkaziladi va kartaga joylanadi.",
     labelLabel: "Yorliq",
     labelPlaceholder: "Karta raqami",
     valueLabel: "Qiymat",
@@ -91,11 +85,19 @@ const uz: Dictionary = {
     colorLabel: "Rang",
     customColor: "Boshqa rang",
   },
-  preview: { heading: "Ko‘rinishi" },
+  preview: {
+    heading: "Ko‘rinishi",
+    example: "Namuna — formani to‘ldirganingiz sari yangilanadi",
+  },
   actions: {
     addApple: "Apple Wallet’ga qo‘shish",
     addGoogle: "Google Wallet’ga qo‘shish",
     working: "Karta yaratilmoqda…",
+    appleDone: "Karta tayyor. Wallet’ga saqlash uchun «Qo‘shish» tugmasini bosing.",
+    handoffTitle: "iPhone’da oching",
+    handoffBody: "QR kodni iPhone kamerasi bilan skanerlang. Sahifa to‘ldirilgan karta bilan ochiladi — u yerda «Apple Wallet’ga qo‘shish» tugmasini bosing.",
+    handoffNote: "Logotip ko‘chirilmaydi — kerak bo‘lsa, uni telefonda qayta qo‘shing.",
+    handoffDownload: ".pkpass faylini yuklab olish",
   },
   errors: {
     empty: "Shtrix-kod ma’lumotini kiriting.",

@@ -33,9 +33,7 @@ export function FormField({
       </Label>
       {children}
       {(error || hint) && (
-        <p className={error ? "font-mono text-xs text-destructive" : "font-mono text-xs text-muted-foreground"}>
-          {error ?? hint}
-        </p>
+        <p className={error ? "text-xs text-destructive" : "text-xs text-muted-foreground"}>{error ?? hint}</p>
       )}
     </div>
   )
@@ -57,7 +55,6 @@ export function PinflInputs({
   const set = (patch: Partial<PinflState>) => onChange({ ...value, ...patch })
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-sm font-medium">{dict.pinfl.heading}</h2>
       <p className="flex gap-2 rounded-lg border bg-muted/50 p-3 text-xs text-muted-foreground">
         <Info className="mt-0.5 size-3.5 shrink-0" />
         {dict.pinfl.privacy}
@@ -133,7 +130,6 @@ export function WifiInputs({
     ({ WPA: dict.wifi.securityWPA, WEP: dict.wifi.securityWEP, nopass: dict.wifi.securityNopass })[s]
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-sm font-medium">{dict.wifi.heading}</h2>
       <FormField id="ssid" label={dict.wifi.ssidLabel} error={errors.ssid}>
         <Input
           id="ssid"
@@ -172,7 +168,7 @@ export function WifiInputs({
           </Select>
         </FormField>
       </div>
-      <p className="font-mono text-xs text-muted-foreground">{dict.wifi.hint}</p>
+      <p className="text-xs text-muted-foreground">{dict.wifi.hint}</p>
     </div>
   )
 }
@@ -190,7 +186,6 @@ export function LinkInputs({
 }) {
   return (
     <div className="flex flex-col gap-4">
-      <h2 className="text-sm font-medium">{dict.link.heading}</h2>
       <FormField id="link" label={dict.link.urlLabel} error={error} hint={dict.link.hint}>
         <Input
           id="link"
