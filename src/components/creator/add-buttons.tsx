@@ -1,10 +1,11 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Download, Loader2 } from "lucide-react"
+import { Compass, Download, Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { AppleIcon, GoogleIcon } from "@/components/creator/brand-icons"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -18,6 +19,7 @@ import type { Platform } from "@/lib/barcode/formats"
 import type { Device } from "@/lib/client/device"
 import { renderBarcodeSvg } from "@/lib/client/render"
 import type { Dictionary } from "@/lib/i18n/dictionaries/en"
+import { cn } from "@/lib/utils"
 
 type Props = {
   device: Device
@@ -39,19 +41,25 @@ export function AddButtons({ device, busy, inAppBrowser, onAdd, dict }: Props) {
   return (
     <div className="flex flex-col gap-3">
       {inAppBrowser && (
-        <div className="flex flex-col gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-200">
-          <span>{dict.inApp.body}</span>
-          <Button variant="outline" size="sm" className="self-start" onClick={copyLink}>
-            {dict.inApp.copy}
-          </Button>
-        </div>
+        <Alert>
+          <Compass />
+          <AlertDescription className="gap-3">
+            {dict.inApp.body}
+            <Button variant="outline" size="sm" onClick={copyLink}>
+              {dict.inApp.copy}
+            </Button>
+          </AlertDescription>
+        </Alert>
       )}
       {order.map((platform, i) => (
         <Button
           key={platform}
           size="lg"
-          variant={i === 0 ? "default" : "outline"}
-          className="h-12 text-base"
+          // Styled after the official black "Add to … Wallet" badges, in both themes.
+          className={cn(
+            "h-12 bg-black text-base text-white hover:bg-black/85 dark:ring-1 dark:ring-white/20",
+            i > 0 && "h-11 text-sm",
+          )}
           disabled={busy !== null}
           onClick={() => onAdd(platform)}
         >

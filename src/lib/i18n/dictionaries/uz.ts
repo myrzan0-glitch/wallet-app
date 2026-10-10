@@ -10,6 +10,7 @@ const uz: Dictionary = {
     title: "Istalgan karta, kod yoki havolani telefon hamyoniga qo‘shing",
     subtitle: "Sodiqlik kartalari, JShShIR, Wi-Fi va havolalar — Apple Wallet va Google Wallet’ga. Bepul, ro‘yxatdan o‘tmasdan.",
   },
+  language: "Til",
   theme: { toggle: "Mavzuni almashtirish", light: "Yorug‘", dark: "Qorong‘i", system: "Tizim" },
   tabs: { apple: "Apple Wallet", google: "Google Wallet" },
   templates: {
@@ -83,6 +84,7 @@ const uz: Dictionary = {
     valueLabel: "Qiymat",
     valuePlaceholder: "12345",
     colorLabel: "Rang",
+    colorNames: ["Qora", "To‘q ko‘k", "Ko‘k", "Yashil", "Qizil", "To‘q sariq", "Binafsha", "Och kulrang"],
     customColor: "Boshqa rang",
   },
   preview: {

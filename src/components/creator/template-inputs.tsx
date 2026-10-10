@@ -1,15 +1,20 @@
 "use client"
 
-import type { ReactNode } from "react"
+import { cloneElement, type ReactElement, type ReactNode } from "react"
 import { Info } from "lucide-react"
 
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import type { Dictionary } from "@/lib/i18n/dictionaries/en"
 import { WIFI_SECURITY, type WifiSecurity } from "@/lib/templates"
 
+/**
+ * A labelled control built on shadcn's Field. Wires the hint or error to the
+ * control with aria-describedby / aria-invalid so screen readers announce it.
+ */
 export function FormField({
   id,
   label,
@@ -18,24 +23,30 @@ export function FormField({
   hint,
   children,
 }: {
-  id?: string
+  id: string
   label: ReactNode
   optional?: string
   error?: string
   hint?: string
-  children: ReactNode
+  children: ReactElement<{ "aria-describedby"?: string; "aria-invalid"?: boolean }>
 }) {
+  const describedBy = error ? `${id}-error` : hint ? `${id}-hint` : undefined
   return (
-    <div className="flex flex-col gap-2">
-      <Label htmlFor={id}>
-        {label}
-        {optional && <span className="font-normal text-muted-foreground">{optional}</span>}
-      </Label>
-      {children}
-      {(error || hint) && (
-        <p className={error ? "text-xs text-destructive" : "text-xs text-muted-foreground"}>{error ?? hint}</p>
+    <Field data-invalid={!!error}>
+      <FieldLabel htmlFor={id}>
+        {/* One inline run so "(optional)" wraps with the label instead of becoming a column. */}
+        <span>
+          {label}
+          {optional && <span className="font-normal text-muted-foreground"> {optional}</span>}
+        </span>
+      </FieldLabel>
+      {cloneElement(children, { "aria-describedby": describedBy, "aria-invalid": !!error })}
+      {error ? (
+        <FieldError id={`${id}-error`}>{error}</FieldError>
+      ) : (
+        hint && <FieldDescription id={`${id}-hint`}>{hint}</FieldDescription>
       )}
-    </div>
+    </Field>
   )
 }
 
@@ -55,10 +66,10 @@ export function PinflInputs({
   const set = (patch: Partial<PinflState>) => onChange({ ...value, ...patch })
   return (
     <div className="flex flex-col gap-4">
-      <p className="flex gap-2 rounded-lg border bg-muted/50 p-3 text-xs text-muted-foreground">
-        <Info className="mt-0.5 size-3.5 shrink-0" />
-        {dict.pinfl.privacy}
-      </p>
+      <Alert>
+        <Info />
+        <AlertDescription>{dict.pinfl.privacy}</AlertDescription>
+      </Alert>
       <FormField id="pinfl" label={dict.pinfl.pinflLabel} error={errors.pinfl}>
         <Input
           id="pinfl"
@@ -67,7 +78,6 @@ export function PinflInputs({
           maxLength={20}
           placeholder="31205901234567"
           value={value.pinfl}
-          aria-invalid={!!errors.pinfl}
           onChange={(e) => set({ pinfl: e.target.value })}
         />
       </FormField>
@@ -85,7 +95,6 @@ export function PinflInputs({
             maxLength={12}
             placeholder="AA1234567"
             value={value.passport}
-            aria-invalid={!!errors.passport}
             onChange={(e) => set({ passport: e.target.value })}
           />
         </FormField>
@@ -97,17 +106,16 @@ export function PinflInputs({
             maxLength={12}
             placeholder="123456789"
             value={value.stir}
-            aria-invalid={!!errors.stir}
             onChange={(e) => set({ stir: e.target.value })}
           />
         </FormField>
       </div>
-      <div className="flex items-center gap-3">
+      <Field orientation="horizontal">
         <Switch id="pinfl-barcode" checked={value.barcode} onCheckedChange={(barcode) => set({ barcode })} />
-        <Label htmlFor="pinfl-barcode" className="font-normal">
+        <FieldLabel htmlFor="pinfl-barcode" className="font-normal">
           {dict.pinfl.barcodeToggle}
-        </Label>
-      </div>
+        </FieldLabel>
+      </Field>
     </div>
   )
 }
@@ -137,7 +145,6 @@ export function WifiInputs({
           maxLength={32}
           placeholder={dict.wifi.ssidPlaceholder}
           value={value.ssid}
-          aria-invalid={!!errors.ssid}
           onChange={(e) => set({ ssid: e.target.value })}
         />
       </FormField>
@@ -149,7 +156,6 @@ export function WifiInputs({
             maxLength={63}
             disabled={value.security === "nopass"}
             value={value.security === "nopass" ? "" : value.password}
-            aria-invalid={!!errors.password}
             onChange={(e) => set({ password: e.target.value })}
           />
         </FormField>
@@ -168,7 +174,7 @@ export function WifiInputs({
           </Select>
         </FormField>
       </div>
-      <p className="text-xs text-muted-foreground">{dict.wifi.hint}</p>
+      <FieldDescription>{dict.wifi.hint}</FieldDescription>
     </div>
   )
 }
@@ -196,7 +202,6 @@ export function LinkInputs({
           maxLength={512}
           placeholder={dict.link.urlPlaceholder}
           value={value}
-          aria-invalid={!!error}
           onChange={(e) => onChange(e.target.value)}
         />
       </FormField>

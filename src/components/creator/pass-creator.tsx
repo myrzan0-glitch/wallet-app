@@ -19,8 +19,9 @@ import {
   type InputId,
 } from "@/components/creator/state"
 import { LinkInputs, PinflInputs, WifiInputs } from "@/components/creator/template-inputs"
+import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { toPlatformFormat, type Platform } from "@/lib/barcode/formats"
 import { detectDevice, isIosInAppBrowser, type Device } from "@/lib/client/device"
 import type { ProcessedLogo } from "@/lib/client/image"
@@ -162,63 +163,75 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:items-start">
-      <section className="flex flex-col gap-8 rounded-2xl border bg-card p-5 shadow-sm sm:p-8">
-        <Tabs value={state.template} onValueChange={(t: Template) => update("template", t)}>
-          <TabsList variant="line" className="w-full">
-            {(Object.keys(TEMPLATE_ICONS) as Template[]).map((t) => {
-              const Icon = TEMPLATE_ICONS[t]
-              return (
-                <TabsTrigger key={t} value={t} className="px-1 max-sm:[&_svg]:hidden">
-                  <Icon />
-                  {dict.templates[t]}
-                </TabsTrigger>
-              )
-            })}
-          </TabsList>
-        </Tabs>
+      <Card className="gap-0 py-0">
+        <CardContent className="flex flex-col gap-8 p-5 sm:p-8">
+          <Tabs value={state.template} onValueChange={(t) => update("template", t as Template)} className="gap-8">
+            <TabsList variant="line" className="w-full">
+              {(Object.keys(TEMPLATE_ICONS) as Template[]).map((t) => {
+                const Icon = TEMPLATE_ICONS[t]
+                return (
+                  <TabsTrigger key={t} value={t} className="px-1 max-sm:[&_svg]:hidden">
+                    <Icon />
+                    {dict.templates[t]}
+                  </TabsTrigger>
+                )
+              })}
+            </TabsList>
 
-        {state.template === "card" && (
-          <CardInputs value={state.card} onChange={(v) => update("card", v)} error={errorText("barcode")} dict={dict} />
-        )}
-        {state.template === "pinfl" && (
-          <PinflInputs
-            value={state.pinfl}
-            onChange={(v) => update("pinfl", v)}
+            <TabsContent value="card">
+              <CardInputs
+                value={state.card}
+                onChange={(v) => update("card", v)}
+                error={errorText("barcode")}
+                dict={dict}
+              />
+            </TabsContent>
+            <TabsContent value="pinfl">
+              <PinflInputs
+                value={state.pinfl}
+                onChange={(v) => update("pinfl", v)}
+                dict={dict}
+                errors={{ pinfl: errorText("pinfl"), passport: errorText("passport"), stir: errorText("stir") }}
+              />
+            </TabsContent>
+            <TabsContent value="wifi">
+              <WifiInputs
+                value={state.wifi}
+                onChange={(v) => update("wifi", v)}
+                dict={dict}
+                errors={{ ssid: errorText("ssid"), password: errorText("wifi-password") }}
+              />
+            </TabsContent>
+            <TabsContent value="link">
+              <LinkInputs
+                value={state.link}
+                onChange={(v) => update("link", v)}
+                dict={dict}
+                error={errorText("link")}
+              />
+            </TabsContent>
+          </Tabs>
+
+          {/* On phones the preview sits right under the inputs it reflects. */}
+          <div className="lg:hidden">{preview}</div>
+
+          <Separator />
+
+          <DesignInputs
+            title={state.title}
+            titlePlaceholder={draft.defaultTitle || dict.design.titlePlaceholder}
+            titleError={titleError}
+            onTitleChange={(v) => update("title", v)}
+            logo={logo}
+            onLogoChange={setLogo}
+            color={state.color}
+            onColorChange={(v) => update("color", v)}
             dict={dict}
-            errors={{ pinfl: errorText("pinfl"), passport: errorText("passport"), stir: errorText("stir") }}
           />
-        )}
-        {state.template === "wifi" && (
-          <WifiInputs
-            value={state.wifi}
-            onChange={(v) => update("wifi", v)}
-            dict={dict}
-            errors={{ ssid: errorText("ssid"), password: errorText("wifi-password") }}
-          />
-        )}
-        {state.template === "link" && (
-          <LinkInputs value={state.link} onChange={(v) => update("link", v)} dict={dict} error={errorText("link")} />
-        )}
 
-        {/* On phones the preview sits right under the inputs it reflects. */}
-        <div className="lg:hidden">{preview}</div>
-
-        <Separator />
-
-        <DesignInputs
-          title={state.title}
-          titlePlaceholder={draft.defaultTitle || dict.design.titlePlaceholder}
-          titleError={titleError}
-          onTitleChange={(v) => update("title", v)}
-          logo={logo}
-          onLogoChange={setLogo}
-          color={state.color}
-          onColorChange={(v) => update("color", v)}
-          dict={dict}
-        />
-
-        <div className="lg:hidden">{actions}</div>
-      </section>
+          <div className="lg:hidden">{actions}</div>
+        </CardContent>
+      </Card>
 
       {/* On desktop the preview and buttons stay in view while the form scrolls. */}
       <aside className="hidden flex-col gap-6 lg:sticky lg:top-6 lg:flex">

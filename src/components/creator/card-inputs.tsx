@@ -8,6 +8,7 @@ import { CameraScanner } from "@/components/creator/camera-scanner"
 import type { CardState } from "@/components/creator/state"
 import { FormField } from "@/components/creator/template-inputs"
 import { Button } from "@/components/ui/button"
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
@@ -106,22 +107,18 @@ export function CardInputs({ value, onChange, error, dict }: Props) {
           maxLength={LIMITS.barcode}
           placeholder={dict.code.dataPlaceholder}
           autoComplete="off"
-          aria-invalid={!!error}
           onChange={(e) => onBarcodeChange(e.target.value)}
         />
       </FormField>
 
       {showFormat ? (
-        <FormField
-          id="format"
-          label={dict.code.formatLabel}
-          hint={value.format === "ean13" ? dict.code.ean13Apple : dict.code.formatHint}
-        >
+        <Field>
+          <FieldLabel htmlFor="format">{dict.code.formatLabel}</FieldLabel>
           <Select
             value={value.format}
             onValueChange={(f) => onChange({ ...value, format: f as BarcodeFormat, formatTouched: true })}
           >
-            <SelectTrigger id="format" className="w-full sm:w-60">
+            <SelectTrigger id="format" className="w-full sm:w-60" aria-describedby="format-hint">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -132,7 +129,10 @@ export function CardInputs({ value, onChange, error, dict }: Props) {
               ))}
             </SelectContent>
           </Select>
-        </FormField>
+          <FieldDescription id="format-hint">
+            {value.format === "ean13" ? dict.code.ean13Apple : dict.code.formatHint}
+          </FieldDescription>
+        </Field>
       ) : (
         <p className="-mt-2 text-xs text-muted-foreground">
           {dict.code.formatAuto.replace("{format}", FORMAT_LABELS[value.format])}

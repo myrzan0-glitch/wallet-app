@@ -8,6 +8,7 @@ const en = {
     title: "Put any card, code or link in your phone’s wallet",
     subtitle: "Loyalty cards, PINFL, Wi-Fi and links — into Apple Wallet and Google Wallet. Free, no sign-up.",
   },
+  language: "Language",
   theme: { toggle: "Toggle theme", light: "Light", dark: "Dark", system: "System" },
   tabs: { apple: "Apple Wallet", google: "Google Wallet" },
   templates: {
@@ -81,6 +82,7 @@ const en = {
     valueLabel: "Value",
     valuePlaceholder: "12345",
     colorLabel: "Color",
+    colorNames: ["Black", "Navy", "Blue", "Green", "Red", "Orange", "Purple", "Light grey"],
     customColor: "Custom color",
   },
   preview: {

@@ -10,6 +10,7 @@ const ru: Dictionary = {
     title: "Любая карта, код или ссылка — в кошельке телефона",
     subtitle: "Карты лояльности, ПИНФЛ, Wi-Fi и ссылки — в Apple Wallet и Google Wallet. Бесплатно, без регистрации.",
   },
+  language: "Язык",
   theme: { toggle: "Сменить тему", light: "Светлая", dark: "Тёмная", system: "Системная" },
   tabs: { apple: "Apple Wallet", google: "Google Wallet" },
   templates: {
@@ -83,6 +84,7 @@ const ru: Dictionary = {
     valueLabel: "Значение",
     valuePlaceholder: "12345",
     colorLabel: "Цвет",
+    colorNames: ["Чёрный", "Тёмно-синий", "Синий", "Зелёный", "Красный", "Оранжевый", "Фиолетовый", "Светло-серый"],
     customColor: "Свой цвет",
   },
   preview: {

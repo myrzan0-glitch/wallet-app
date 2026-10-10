@@ -1,11 +1,10 @@
-import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import { PassCreator } from "@/components/creator/pass-creator"
+import { LanguageSwitcher } from "@/components/language-switcher"
 import { ModeToggle } from "@/components/mode-toggle"
-import { LOCALES, LOCALE_NAMES, isLocale } from "@/lib/i18n/config"
+import { isLocale } from "@/lib/i18n/config"
 import { getDictionary } from "@/lib/i18n/dictionaries"
-import { cn } from "@/lib/utils"
 
 export default async function Home({ params }: PageProps<"/[lang]">) {
   const { lang } = await params
@@ -16,20 +15,8 @@ export default async function Home({ params }: PageProps<"/[lang]">) {
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-8 px-4 py-6 sm:gap-10 sm:py-12">
       <header className="flex items-center justify-between gap-4">
         <span className="font-mono text-sm font-medium tracking-tight">wallet.myrzan</span>
-        <nav className="flex items-center gap-1 text-xs">
-          {LOCALES.map((l) => (
-            <Link
-              key={l}
-              href={`/${l}`}
-              hrefLang={l}
-              className={cn(
-                "rounded-md px-2 py-1 text-muted-foreground hover:bg-accent hover:text-foreground",
-                l === lang && "bg-accent text-foreground",
-              )}
-            >
-              {LOCALE_NAMES[l]}
-            </Link>
-          ))}
+        <nav className="flex items-center gap-1">
+          <LanguageSwitcher lang={lang} label={dict.language} />
           <ModeToggle dict={dict.theme} />
         </nav>
       </header>
