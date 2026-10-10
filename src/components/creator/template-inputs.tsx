@@ -1,13 +1,10 @@
 "use client"
 
 import { cloneElement, type ReactElement, type ReactNode } from "react"
-import { Info } from "lucide-react"
 
-import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
 import type { Dictionary } from "@/lib/i18n/dictionaries/en"
 import { WIFI_SECURITY, type WifiSecurity } from "@/lib/templates"
 
@@ -47,76 +44,6 @@ export function FormField({
         hint && <FieldDescription id={`${id}-hint`}>{hint}</FieldDescription>
       )}
     </Field>
-  )
-}
-
-export type PinflState = { pinfl: string; passport: string; stir: string; barcode: boolean }
-
-export function PinflInputs({
-  value,
-  onChange,
-  errors,
-  dict,
-}: {
-  value: PinflState
-  onChange: (next: PinflState) => void
-  errors: Partial<Record<"pinfl" | "passport" | "stir", string>>
-  dict: Dictionary
-}) {
-  const set = (patch: Partial<PinflState>) => onChange({ ...value, ...patch })
-  return (
-    <div className="flex flex-col gap-4">
-      <Alert>
-        <Info />
-        <AlertDescription>{dict.pinfl.privacy}</AlertDescription>
-      </Alert>
-      <FormField id="pinfl" label={dict.pinfl.pinflLabel} error={errors.pinfl}>
-        <Input
-          id="pinfl"
-          inputMode="numeric"
-          autoComplete="off"
-          maxLength={20}
-          placeholder="31205901234567"
-          value={value.pinfl}
-          onChange={(e) => set({ pinfl: e.target.value })}
-        />
-      </FormField>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <FormField
-          id="passport"
-          label={dict.pinfl.passportLabel}
-          optional={dict.design.optional}
-          error={errors.passport}
-        >
-          <Input
-            id="passport"
-            autoComplete="off"
-            autoCapitalize="characters"
-            maxLength={12}
-            placeholder="AA1234567"
-            value={value.passport}
-            onChange={(e) => set({ passport: e.target.value })}
-          />
-        </FormField>
-        <FormField id="stir" label={dict.pinfl.stirLabel} optional={dict.design.optional} error={errors.stir}>
-          <Input
-            id="stir"
-            inputMode="numeric"
-            autoComplete="off"
-            maxLength={12}
-            placeholder="123456789"
-            value={value.stir}
-            onChange={(e) => set({ stir: e.target.value })}
-          />
-        </FormField>
-      </div>
-      <Field orientation="horizontal">
-        <Switch id="pinfl-barcode" checked={value.barcode} onCheckedChange={(barcode) => set({ barcode })} />
-        <FieldLabel htmlFor="pinfl-barcode" className="font-normal">
-          {dict.pinfl.barcodeToggle}
-        </FieldLabel>
-      </Field>
-    </div>
   )
 }
 

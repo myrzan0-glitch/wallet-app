@@ -1,23 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { checkPassport, checkPinfl, checkStir, checkWifi, displayLink, normalizeLink, wifiQr } from "@/lib/templates"
-
-describe("PINFL / documents", () => {
-  it("accepts 14 digits and ignores spaces", () => {
-    expect(checkPinfl("3120 5901 2345 67")).toEqual({ value: "31205901234567" })
-  })
-  it("rejects other lengths and letters", () => {
-    expect(checkPinfl("1234567890123").error).toBe("pinflFormat")
-    expect(checkPinfl("3120590123456A").error).toBe("pinflFormat")
-  })
-  it("normalises passport and treats empty optional fields as valid", () => {
-    expect(checkPassport(" aa 1234567 ")).toEqual({ value: "AA1234567" })
-    expect(checkPassport("").error).toBeUndefined()
-    expect(checkPassport("A1234567").error).toBe("passportFormat")
-    expect(checkStir("").error).toBeUndefined()
-    expect(checkStir("12345678").error).toBe("stirFormat")
-  })
-})
+import { checkWifi, displayLink, normalizeLink, wifiQr } from "@/lib/templates"
 
 describe("Wi-Fi", () => {
   it("builds the WIFI: payload and escapes reserved characters", () => {

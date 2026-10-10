@@ -108,7 +108,6 @@ export async function createGoogleSaveUrl(input: PassRequest): Promise<string> {
       : {}),
     textModulesData: [
       ...rest.map((f, i) => ({ id: `f${i + 1}`, header: f.label, body: f.value })),
-      ...(input.backNote ? [{ id: "note", header: input.title, body: input.backNote }] : []),
       { id: "made_with", header: "Wallet", body: `Created with ${SITE_HOST}` },
     ],
   }

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { CreditCard, IdCard, Link2, Wifi } from "lucide-react"
+import { CreditCard, Link2, Wifi } from "lucide-react"
 import { toast } from "sonner"
 
 import { AddButtons, HandoffDialog } from "@/components/creator/add-buttons"
@@ -18,7 +18,7 @@ import {
   type FormState,
   type InputId,
 } from "@/components/creator/state"
-import { LinkInputs, PinflInputs, WifiInputs } from "@/components/creator/template-inputs"
+import { LinkInputs, WifiInputs } from "@/components/creator/template-inputs"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -28,7 +28,7 @@ import type { ProcessedLogo } from "@/lib/client/image"
 import type { Dictionary } from "@/lib/i18n/dictionaries/en"
 import type { Template } from "@/lib/templates"
 
-const TEMPLATE_ICONS = { card: CreditCard, pinfl: IdCard, wifi: Wifi, link: Link2 } satisfies Record<Template, unknown>
+const TEMPLATE_ICONS = { card: CreditCard, wifi: Wifi, link: Link2 } satisfies Record<Template, unknown>
 
 /** Submits a real form so iOS Safari can hand the .pkpass to Wallet. */
 function submitApplePass(payload: object) {
@@ -90,7 +90,7 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
 
   const buildPayload = (platform: Platform) => {
     const barcode = draft.barcode && { ...draft.barcode, format: toPlatformFormat(draft.barcode.format, platform) }
-    const base = { barcode, title, fields: draft.fields, backNote: draft.backNote, color: state.color }
+    const base = { barcode, title, fields: draft.fields, color: state.color }
     // Apple shows a wide logo plus a square icon; Google masks its logo to a circle.
     return platform === "apple" ? { ...base, logo: logo?.logo, icon: logo?.icon } : { ...base, logo: logo?.icon }
   }
@@ -152,7 +152,7 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
       title={isExample ? sample.defaultTitle : title}
       fields={isExample ? sample.fields : draft.fields}
       barcode={isExample ? sample.barcode : draft.barcode}
-      placeholderFormat={state.template === "card" ? state.card.format : state.template === "pinfl" ? "code128" : "qr"}
+      placeholderFormat={state.template === "card" ? state.card.format : "qr"}
       color={state.color}
       logo={logo?.logo}
       icon={logo?.icon}
@@ -184,14 +184,6 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
                 onChange={(v) => update("card", v)}
                 error={errorText("barcode")}
                 dict={dict}
-              />
-            </TabsContent>
-            <TabsContent value="pinfl">
-              <PinflInputs
-                value={state.pinfl}
-                onChange={(v) => update("pinfl", v)}
-                dict={dict}
-                errors={{ pinfl: errorText("pinfl"), passport: errorText("passport"), stir: errorText("stir") }}
               />
             </TabsContent>
             <TabsContent value="wifi">

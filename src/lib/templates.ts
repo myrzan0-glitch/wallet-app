@@ -1,34 +1,10 @@
 import type { BarcodeFormat } from "@/lib/barcode/formats"
 
-export const TEMPLATES = ["card", "pinfl", "wifi", "link"] as const
+export const TEMPLATES = ["card", "wifi", "link"] as const
 export type Template = (typeof TEMPLATES)[number]
 
 export type PassField = { label: string; value: string }
 export type PassBarcode = { format: BarcodeFormat; value: string }
-
-// --- PINFL / documents ------------------------------------------------------
-
-const compact = (s: string) => s.replace(/\s+/g, "")
-
-/** PINFL (JShShIR) is the 14-digit personal identification number. */
-export function checkPinfl(raw: string): { value: string; error?: "pinflFormat" } {
-  const value = compact(raw)
-  return /^\d{14}$/.test(value) ? { value } : { value, error: "pinflFormat" }
-}
-
-/** Optional passport series + number, e.g. AA1234567. */
-export function checkPassport(raw: string): { value: string; error?: "passportFormat" } {
-  const value = compact(raw).toUpperCase()
-  if (!value) return { value }
-  return /^[A-Z]{2}\d{7}$/.test(value) ? { value } : { value, error: "passportFormat" }
-}
-
-/** Optional STIR (taxpayer identification number), 9 digits. */
-export function checkStir(raw: string): { value: string; error?: "stirFormat" } {
-  const value = compact(raw)
-  if (!value) return { value }
-  return /^\d{9}$/.test(value) ? { value } : { value, error: "stirFormat" }
-}
 
 // --- Wi-Fi ------------------------------------------------------------------
 
