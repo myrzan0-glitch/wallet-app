@@ -13,6 +13,7 @@ const en = {
       "Download the Apple pass or open the Google Wallet save link.",
     ],
   },
+  theme: { toggle: "Toggle theme", light: "Light", dark: "Dark", system: "System" },
   tabs: { apple: "Apple Wallet", google: "Google Wallet" },
   code: {
     heading: "Scan or Upload Code",

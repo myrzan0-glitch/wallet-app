@@ -396,7 +396,7 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
           />
 
           {platform === "apple" && inAppBrowser && (
-            <div className="flex flex-col gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-3 rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-200 sm:flex-row sm:items-center sm:justify-between">
               <span>{dict.inApp.body}</span>
               <Button variant="outline" size="sm" onClick={copyLink}>
                 {dict.inApp.copy}

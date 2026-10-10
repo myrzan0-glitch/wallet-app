@@ -15,6 +15,7 @@ const ru: Dictionary = {
       "Скачайте карту для Apple или откройте ссылку Google Wallet.",
     ],
   },
+  theme: { toggle: "Сменить тему", light: "Светлая", dark: "Тёмная", system: "Системная" },
   tabs: { apple: "Apple Wallet", google: "Google Wallet" },
   code: {
     heading: "Сканируйте или загрузите код",
