@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist_Mono, Inter } from "next/font/google"
 import { notFound } from "next/navigation"
 
 import { ThemeProvider } from "@/components/theme-provider"
@@ -8,7 +8,7 @@ import { LOCALES, isLocale } from "@/lib/i18n/config"
 import { getDictionary } from "@/lib/i18n/dictionaries"
 import "../globals.css"
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin", "cyrillic", "cyrillic-ext"] })
+const inter = Inter({ variable: "--font-inter", subsets: ["latin", "cyrillic", "cyrillic-ext"] })
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin", "cyrillic", "cyrillic-ext"] })
 
 export const viewport: Viewport = {
@@ -43,7 +43,7 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   if (!isLocale(lang)) notFound()
 
   return (
-    <html lang={lang} suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang={lang} suppressHydrationWarning className={`${inter.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <ThemeProvider>
           {children}
