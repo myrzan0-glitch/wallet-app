@@ -5,14 +5,10 @@ const en = {
       "Turn loyalty, membership and gift card barcodes into Apple Wallet and Google Wallet passes in seconds. Free, no sign-up.",
   },
   hero: {
-    tagline:
-      "A simple utility to convert physical barcodes into digital passes for Apple Wallet and Google Wallet. Entirely free and runs directly from your browser.",
-    steps: [
-      "Enter your membership or loyalty card barcode data.",
-      "Configure the appearance and titles for your pass.",
-      "Download the Apple pass or open the Google Wallet save link.",
-    ],
+    title: "Put any card, code or link in your phone’s wallet",
+    subtitle: "Loyalty cards, PINFL, Wi-Fi and links — into Apple Wallet and Google Wallet. Free, no sign-up.",
   },
+  language: "Language",
   theme: { toggle: "Toggle theme", light: "Light", dark: "Dark", system: "System" },
   tabs: { apple: "Apple Wallet", google: "Google Wallet" },
   templates: {
@@ -22,7 +18,6 @@ const en = {
     link: "Link",
   },
   pinfl: {
-    heading: "My documents",
     privacy: "This data lives only in the pass — we don’t store it. Anyone who unlocks your phone can see it, so add only what you need.",
     pinflLabel: "PINFL (14 digits)",
     passportLabel: "Passport series and number",
@@ -35,7 +30,6 @@ const en = {
     note: "Not an official document. Created by the owner for convenience.",
   },
   wifi: {
-    heading: "Wi-Fi network",
     ssidLabel: "Network name (SSID)",
     ssidPlaceholder: "Cafe_WiFi",
     passwordLabel: "Password",
@@ -49,7 +43,6 @@ const en = {
     defaultTitle: "Wi-Fi",
   },
   link: {
-    heading: "Link",
     urlLabel: "Link (URL)",
     urlPlaceholder: "instagram.com/yourshop or @telegram",
     hint: "Website, Instagram, Telegram or any link — scanning the QR code opens it.",
@@ -73,6 +66,9 @@ const en = {
     cancel: "Cancel",
     ean13Apple:
       "iPhones on iOS 27+ show EAN-13 natively; older iPhones get the same number as Code 128.",
+    formatAuto: "Format: {format}",
+    formatChange: "Change",
+    reading: "Reading…",
   },
   design: {
     titleLabel: "Pass Title",
@@ -81,19 +77,27 @@ const en = {
     optional: "(Optional)",
     uploadLogo: "Upload Logo",
     removeLogo: "Remove",
-    logoHint: "Converted to PNG and embedded in the pass.",
     labelLabel: "Label",
     labelPlaceholder: "Member ID",
     valueLabel: "Value",
     valuePlaceholder: "12345",
     colorLabel: "Color",
+    colorNames: ["Black", "Navy", "Blue", "Green", "Red", "Orange", "Purple", "Light grey"],
     customColor: "Custom color",
   },
-  preview: { heading: "Preview" },
+  preview: {
+    heading: "Preview",
+    example: "Example — it updates as you fill in the form",
+  },
   actions: {
     addApple: "Add to Apple Wallet",
     addGoogle: "Add to Google Wallet",
     working: "Creating pass…",
+    appleDone: "Pass created. Tap “Add” to save it to Wallet.",
+    handoffTitle: "Open this on your iPhone",
+    handoffBody: "Scan the QR code with your iPhone camera. The page opens with your pass filled in — tap “Add to Apple Wallet” there.",
+    handoffNote: "Your logo isn’t transferred; add it again on the phone if you need it.",
+    handoffDownload: "Download the .pkpass file instead",
   },
   errors: {
     empty: "Enter the barcode data.",

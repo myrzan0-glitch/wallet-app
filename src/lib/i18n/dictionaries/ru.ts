@@ -7,14 +7,10 @@ const ru: Dictionary = {
       "Превратите штрихкоды карт лояльности, абонементов и подарочных карт в карты Apple Wallet и Google Wallet за несколько секунд. Бесплатно, без регистрации.",
   },
   hero: {
-    tagline:
-      "Простой инструмент, который превращает штрихкоды с пластиковых карт в цифровые карты для Apple Wallet и Google Wallet. Полностью бесплатно и работает прямо в браузере.",
-    steps: [
-      "Введите данные штрихкода вашей карты лояльности или абонемента.",
-      "Настройте внешний вид и название карты.",
-      "Скачайте карту для Apple или откройте ссылку Google Wallet.",
-    ],
+    title: "Любая карта, код или ссылка — в кошельке телефона",
+    subtitle: "Карты лояльности, ПИНФЛ, Wi-Fi и ссылки — в Apple Wallet и Google Wallet. Бесплатно, без регистрации.",
   },
+  language: "Язык",
   theme: { toggle: "Сменить тему", light: "Светлая", dark: "Тёмная", system: "Системная" },
   tabs: { apple: "Apple Wallet", google: "Google Wallet" },
   templates: {
@@ -24,7 +20,6 @@ const ru: Dictionary = {
     link: "Ссылка",
   },
   pinfl: {
-    heading: "Мои документы",
     privacy: "Данные хранятся только в самой карте — мы их не сохраняем. Их увидит любой, кто разблокирует ваш телефон, поэтому добавляйте только нужное.",
     pinflLabel: "ПИНФЛ (14 цифр)",
     passportLabel: "Серия и номер паспорта",
@@ -37,7 +32,6 @@ const ru: Dictionary = {
     note: "Не является официальным документом. Создано владельцем для удобства.",
   },
   wifi: {
-    heading: "Сеть Wi-Fi",
     ssidLabel: "Название сети (SSID)",
     ssidPlaceholder: "Cafe_WiFi",
     passwordLabel: "Пароль",
@@ -51,7 +45,6 @@ const ru: Dictionary = {
     defaultTitle: "Wi-Fi",
   },
   link: {
-    heading: "Ссылка",
     urlLabel: "Ссылка (URL)",
     urlPlaceholder: "instagram.com/myshop или @telegram",
     hint: "Сайт, Instagram, Telegram или любая ссылка — QR-код откроет её.",
@@ -75,6 +68,9 @@ const ru: Dictionary = {
     cancel: "Отмена",
     ean13Apple:
       "На iPhone с iOS 27+ EAN-13 отображается как есть; на более старых iPhone тот же номер будет в формате Code 128.",
+    formatAuto: "Формат: {format}",
+    formatChange: "Изменить",
+    reading: "Распознаём…",
   },
   design: {
     titleLabel: "Название карты",
@@ -83,19 +79,27 @@ const ru: Dictionary = {
     optional: "(необязательно)",
     uploadLogo: "Загрузить логотип",
     removeLogo: "Удалить",
-    logoHint: "Конвертируется в PNG и встраивается в карту.",
     labelLabel: "Подпись",
     labelPlaceholder: "Номер карты",
     valueLabel: "Значение",
     valuePlaceholder: "12345",
     colorLabel: "Цвет",
+    colorNames: ["Чёрный", "Тёмно-синий", "Синий", "Зелёный", "Красный", "Оранжевый", "Фиолетовый", "Светло-серый"],
     customColor: "Свой цвет",
   },
-  preview: { heading: "Предпросмотр" },
+  preview: {
+    heading: "Предпросмотр",
+    example: "Пример — карта обновится, когда вы заполните форму",
+  },
   actions: {
     addApple: "Добавить в Apple Wallet",
     addGoogle: "Добавить в Google Wallet",
     working: "Создаём карту…",
+    appleDone: "Карта готова. Нажмите «Добавить», чтобы сохранить её в Wallet.",
+    handoffTitle: "Откройте на iPhone",
+    handoffBody: "Отсканируйте QR-код камерой iPhone. Страница откроется с уже заполненной картой — нажмите там «Добавить в Apple Wallet».",
+    handoffNote: "Логотип не переносится — при необходимости добавьте его на телефоне.",
+    handoffDownload: "Скачать файл .pkpass",
   },
   errors: {
     empty: "Введите данные штрихкода.",
