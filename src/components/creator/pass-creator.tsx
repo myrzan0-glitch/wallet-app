@@ -81,8 +81,8 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
   const barcodeError = showErrors && !barcodeCheck.ok ? dict.errors[barcodeCheck.error] : undefined
   const titleError = showErrors && !title.trim() ? dict.errors.titleRequired : undefined
 
-  const changePlatform = (next: string) => {
-    const p = next as Platform
+  const changePlatform = (next: Platform) => {
+    const p = next
     setPlatform(p)
     setFormat((f) => toPlatformFormat(f, p))
   }
@@ -163,22 +163,18 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
 
   return (
     <section className="overflow-hidden rounded-2xl border bg-card shadow-sm">
-      <Tabs value={platform} onValueChange={changePlatform}>
-        <TabsList className="grid h-auto w-full grid-cols-2 rounded-none border-b bg-muted p-0">
-          {(["apple", "google"] as const).map((p) => (
-            <TabsTrigger
-              key={p}
-              value={p}
-              className="h-14 rounded-none border-0 text-base data-[state=active]:bg-card data-[state=active]:shadow-none"
-            >
-              {p === "apple" ? <AppleIcon className="size-5" /> : <GoogleIcon className="size-5" />}
-              {dict.tabs[p]}
-            </TabsTrigger>
-          ))}
-        </TabsList>
-      </Tabs>
-
       <div className="flex flex-col gap-8 p-5 sm:p-8">
+        <Tabs value={platform} onValueChange={changePlatform}>
+          <TabsList className="w-full group-data-horizontal/tabs:h-10">
+            {(["apple", "google"] as const).map((p) => (
+              <TabsTrigger key={p} value={p}>
+                {p === "apple" ? <AppleIcon /> : <GoogleIcon />}
+                {dict.tabs[p]}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+
         {/* Code input */}
         <div className="flex flex-col gap-4">
           <div className="flex items-center justify-between gap-2">
