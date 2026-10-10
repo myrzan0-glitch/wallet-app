@@ -30,7 +30,7 @@ This is the B2C wedge from `docs/research.md`. The B2B loyalty product comes lat
 | 6 | **Apple Wallet** `.pkpass` download | Signed on the server |
 | 7 | **Google Wallet** "Save" link | Signed JWT |
 | 8 | **Live preview** | Card mock that updates as the user edits |
-| 9 | **i18n** uz / ru / en | Auto-detected, with a switcher |
+| 9 | **i18n** uz / ru / kk / en | Auto-detected, with a switcher |
 
 ### Not in the MVP (later)
 
