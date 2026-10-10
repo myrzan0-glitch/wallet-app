@@ -34,8 +34,9 @@ This is the B2C wedge from `docs/research.md`. The B2B loyalty product comes lat
 
 ### Not in the MVP (later)
 
-- **v1.1 (PINFL, Wi-Fi and Link templates are done; the rest is still to do):**
-  - templates: PINFL / "Hujjatlarim" (My documents), Wi-Fi, card number for transfers, Instagram/Telegram profile
+- **v1.1 (Wi-Fi and Link templates are done; the rest is still to do):**
+  - templates: Wi-Fi, card number for transfers, Instagram/Telegram profile
+  - PINFL / "Hujjatlarim" was built and then removed: national ID numbers on generic passes risk Google Wallet publishing approval
   - share link and "made with" footer on the pass
 - **v1.2:** install/uninstall tracking via Apple `webServiceURL` (needs a database)
 - **Later:**
@@ -199,6 +200,6 @@ wallet-app/
 |---|---|---|
 | Product name / brand | "myrzan wallet" (placeholder) | Pick a catchy Uzbek or Russian name for virality |
 | Hosting | Vercel | Cloudflare Workers (OpenNext) |
-| Apple pass style | `storeCard` | `generic` (better for documents, e.g. PINFL) |
+| Apple pass style | `storeCard` | `generic` |
 | Default language | uz (Latin), falling back to ru by browser locale | ru first |
 | Extra formats in MVP | QR, Code128, EAN-13 (+ PDF417 and Aztec for free) | QR + Code128 only |

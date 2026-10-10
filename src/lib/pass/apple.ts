@@ -51,7 +51,6 @@ export async function createApplePass(input: PassRequest): Promise<Buffer> {
   const colors = passColors(input.color)
   const fields = input.fields.map((f, i) => ({ key: `f${i}`, label: f.label || undefined, value: f.value }))
   const backFields = [
-    ...(input.backNote ? [{ key: "note", label: input.title, value: input.backNote }] : []),
     {
       key: "madeWith",
       label: "Wallet",
@@ -71,7 +70,7 @@ export async function createApplePass(input: PassRequest): Promise<Buffer> {
     backgroundColor: colors.background,
     foregroundColor: colors.foreground,
     labelColor: colors.label,
-    // With several fields the first (e.g. PINFL, network name) is shown large.
+    // With several fields the first (e.g. the Wi-Fi network name) is shown large.
     storeCard:
       fields.length > 1
         ? { primaryFields: fields.slice(0, 1), secondaryFields: fields.slice(1), backFields }

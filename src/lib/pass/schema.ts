@@ -8,7 +8,6 @@ export const LIMITS = {
   value: 64,
   barcode: 512,
   fields: 3,
-  backNote: 300,
   /** Max decoded PNG size for logo / icon. */
   imageBytes: 300 * 1024,
 } as const
@@ -30,7 +29,6 @@ export const passRequestSchema = z
       .nullish(),
     title: z.string().trim().min(1).max(LIMITS.title),
     fields: z.array(fieldSchema).max(LIMITS.fields).default([]),
-    backNote: z.string().trim().max(LIMITS.backNote).optional(),
     color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
     logo: pngDataUrl.optional(),
     icon: pngDataUrl.optional(),

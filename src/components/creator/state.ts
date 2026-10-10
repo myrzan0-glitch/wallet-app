@@ -1,11 +1,8 @@
-import type { PinflState, WifiState } from "@/components/creator/template-inputs"
+import type { WifiState } from "@/components/creator/template-inputs"
 import { PLATFORM_FORMATS, validateBarcode, type BarcodeFormat } from "@/lib/barcode/formats"
 import type { Dictionary } from "@/lib/i18n/dictionaries/en"
 import {
   TEMPLATES,
-  checkPassport,
-  checkPinfl,
-  checkStir,
   checkWifi,
   displayLink,
   normalizeLink,
@@ -22,7 +19,6 @@ export type CardState = { barcode: string; format: BarcodeFormat; formatTouched:
 export type FormState = {
   template: Template
   card: CardState
-  pinfl: PinflState
   wifi: WifiState
   link: string
   title: string
@@ -32,7 +28,6 @@ export type FormState = {
 export const INITIAL_STATE: FormState = {
   template: "card",
   card: { barcode: "", format: "qr", formatTouched: false, label: "", value: "" },
-  pinfl: { pinfl: "", passport: "", stir: "", barcode: false },
   wifi: { ssid: "", password: "", security: "WPA" },
   link: "",
   title: "",
@@ -40,14 +35,13 @@ export const INITIAL_STATE: FormState = {
 }
 
 export type ErrorKey = keyof Dictionary["errors"]
-export type InputId = "barcode" | "pinfl" | "passport" | "stir" | "ssid" | "wifi-password" | "link" | "title"
+export type InputId = "barcode" | "ssid" | "wifi-password" | "link" | "title"
 
 export type Draft = {
   /** `null`: the pass has no barcode; `undefined`: the input is not valid yet. */
   barcode: PassBarcode | null | undefined
   fields: PassField[]
   defaultTitle: string
-  backNote?: string
   /** Keyed by the id of the input the error belongs to, in form order. */
   errors: Partial<Record<InputId, ErrorKey>>
 }
@@ -62,22 +56,6 @@ export function buildDraft(state: FormState, dict: Dictionary): Draft {
         fields: value.trim() ? [{ label: label.trim(), value: value.trim() }] : [],
         defaultTitle: "",
         errors: check.ok ? {} : { barcode: check.error },
-      }
-    }
-    case "pinfl": {
-      const p = checkPinfl(state.pinfl.pinfl)
-      const passport = checkPassport(state.pinfl.passport)
-      const stir = checkStir(state.pinfl.stir)
-      return {
-        barcode: !state.pinfl.barcode ? null : p.error ? undefined : { format: "code128", value: p.value },
-        fields: [
-          ...(p.value ? [{ label: dict.pinfl.fieldPinfl, value: p.value }] : []),
-          ...(passport.value ? [{ label: dict.pinfl.fieldPassport, value: passport.value }] : []),
-          ...(stir.value ? [{ label: dict.pinfl.fieldStir, value: stir.value }] : []),
-        ],
-        defaultTitle: dict.pinfl.defaultTitle,
-        backNote: dict.pinfl.note,
-        errors: { pinfl: p.error, passport: passport.error, stir: stir.error },
       }
     }
     case "wifi": {
@@ -110,12 +88,6 @@ export function sampleDraft(template: Template, dict: Dictionary): Pick<Draft, "
   switch (template) {
     case "card":
       return { barcode: { format: "ean13", value: "4780000123454" }, fields: [], defaultTitle: "Korzinka" }
-    case "pinfl":
-      return {
-        barcode: null,
-        fields: [{ label: dict.pinfl.fieldPinfl, value: "31205901234567" }],
-        defaultTitle: dict.pinfl.defaultTitle,
-      }
     case "wifi":
       return {
         barcode: { format: "qr", value: "WIFI:T:WPA;S:Cafe_WiFi;P:example123;;" },

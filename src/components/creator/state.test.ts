@@ -19,11 +19,11 @@ describe("sharing the form with a phone", () => {
       ...INITIAL_STATE,
       template: "link",
       link: "@myshop",
-      pinfl: { ...INITIAL_STATE.pinfl, pinfl: "31205901234567" },
+      wifi: { ...INITIAL_STATE.wifi, ssid: "Cafe" },
     }
     const decoded = decodeState(encodeState(state))
     expect(decoded?.link).toBe("@myshop")
-    expect(decoded?.pinfl.pinfl).toBe("")
+    expect(decoded?.wifi.ssid).toBe("")
   })
 
   it("rejects garbage and unknown templates", () => {
