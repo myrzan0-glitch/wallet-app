@@ -1,5 +1,8 @@
+import { after } from "next/server"
+
 import { GoogleNotConfiguredError, createGoogleSaveUrl } from "@/lib/pass/google"
 import { readPassRequest } from "@/lib/pass/request"
+import { recordStat } from "@/lib/stats/store"
 
 export async function POST(request: Request) {
   const input = await readPassRequest(request)
@@ -7,6 +10,7 @@ export async function POST(request: Request) {
 
   try {
     const saveUrl = await createGoogleSaveUrl(input.data)
+    after(() => recordStat("generated", "google", { template: input.data.template }))
     return Response.json({ saveUrl }, { headers: { "Cache-Control": "no-store" } })
   } catch (error) {
     if (error instanceof GoogleNotConfiguredError) {

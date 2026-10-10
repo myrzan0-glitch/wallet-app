@@ -1,6 +1,9 @@
+import { after } from "next/server"
+
 import { AppleNotConfiguredError, createApplePass } from "@/lib/pass/apple"
 import { appleConfig } from "@/lib/pass/config"
 import { readPassRequest } from "@/lib/pass/request"
+import { recordStat } from "@/lib/stats/store"
 
 export async function POST(request: Request) {
   const input = await readPassRequest(request)
@@ -14,6 +17,7 @@ export async function POST(request: Request) {
 
   try {
     const pkpass = await createApplePass(input.data)
+    after(() => recordStat("generated", "apple", { template: input.data.template }))
     return new Response(new Uint8Array(pkpass), {
       headers: {
         "Content-Type": "application/vnd.apple.pkpass",
