@@ -1,4 +1,4 @@
-import type { BarcodeFormat } from "@/lib/barcode/formats"
+import { TWO_D_FORMATS, type BarcodeFormat } from "@/lib/barcode/formats"
 
 const BWIP_IDS: Record<BarcodeFormat, string> = {
   qr: "qrcode",
@@ -17,5 +17,7 @@ const BWIP_IDS: Record<BarcodeFormat, string> = {
 /** Renders a barcode to an SVG string for the preview; throws on invalid data. */
 export async function renderBarcodeSvg(format: BarcodeFormat, text: string): Promise<string> {
   const { toSVG } = await import("bwip-js/browser")
-  return toSVG({ bcid: BWIP_IDS[format], text, scale: 2, height: 12, includetext: false })
+  // A fixed bar height only makes sense for linear barcodes; 2D codes keep their own aspect ratio.
+  const height = TWO_D_FORMATS.includes(format) ? {} : { height: 12 }
+  return toSVG({ bcid: BWIP_IDS[format], text, scale: 2, includetext: false, ...height })
 }
