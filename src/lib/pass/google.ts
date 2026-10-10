@@ -9,6 +9,7 @@ import type { BarcodeFormat } from "@/lib/barcode/formats"
 import { TWO_D_FORMATS } from "@/lib/barcode/formats"
 import { SITE_HOST, SITE_URL, googleConfig } from "@/lib/pass/config"
 import { decodePngDataUrl, type PassRequest } from "@/lib/pass/schema"
+import { passId } from "@/lib/stats/keys"
 
 const API = "https://walletobjects.googleapis.com/walletobjects/v1"
 
@@ -42,16 +43,28 @@ function apiClient(config: Config) {
   return client
 }
 
+/** Google posts save and delete events here (only HTTPS URLs are accepted). */
+export const GOOGLE_CALLBACK_URL = `${SITE_URL}/api/passes/google/callback`
+
 /** Creates the shared generic class once; every pass styles itself per object. */
 function ensureClass(config: Config) {
   classReady ??= (async () => {
     const id = `${config.issuerId}.${config.classSuffix}`
     const api = apiClient(config)
+    const callbackOptions = GOOGLE_CALLBACK_URL.startsWith("https://") ? { url: GOOGLE_CALLBACK_URL } : undefined
+    let existing: { callbackOptions?: { url?: string } }
     try {
-      await api.request({ url: `${API}/genericClass/${id}` })
+      existing = (await api.request<typeof existing>({ url: `${API}/genericClass/${id}` })).data
     } catch (error) {
       if ((error as { status?: number }).status !== 404) throw error
-      await api.request({ url: `${API}/genericClass`, method: "POST", data: { id } })
+      await api.request({ url: `${API}/genericClass`, method: "POST", data: { id, callbackOptions } })
+      return
+    }
+    // Classes created before callbacks existed get them once. Stats only, so a failure is not fatal.
+    if (callbackOptions && existing.callbackOptions?.url !== callbackOptions.url) {
+      await api
+        .request({ url: `${API}/genericClass/${id}`, method: "PATCH", data: { callbackOptions } })
+        .catch((error) => console.error("google callback setup failed", (error as Error).message))
     }
   })().catch((error) => {
     classReady = undefined
@@ -89,7 +102,7 @@ export async function createGoogleSaveUrl(input: PassRequest): Promise<string> {
   const showAltText = barcode && !TWO_D_FORMATS.includes(barcode.format) && barcode.value.length <= 40
 
   const object = {
-    id: `${config.issuerId}.${randomUUID()}`,
+    id: `${config.issuerId}.${passId(input.template, randomUUID())}`,
     classId: `${config.issuerId}.${config.classSuffix}`,
     state: "ACTIVE",
     cardTitle: text(input.title),

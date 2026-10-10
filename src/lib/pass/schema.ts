@@ -1,6 +1,7 @@
 import { z } from "zod"
 
 import { BARCODE_FORMATS, validateBarcode } from "@/lib/barcode/formats"
+import { TEMPLATES } from "@/lib/templates"
 
 export const LIMITS = {
   title: 40,
@@ -32,6 +33,8 @@ export const passRequestSchema = z
     color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
     logo: pngDataUrl.optional(),
     icon: pngDataUrl.optional(),
+    /** Only used for stats. */
+    template: z.enum(TEMPLATES).optional(),
   })
   .transform((data, ctx) => {
     if (!data.barcode) return { ...data, barcode: null }

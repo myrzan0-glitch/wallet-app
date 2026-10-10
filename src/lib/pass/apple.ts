@@ -1,15 +1,16 @@
 import "server-only"
 
-import { randomUUID } from "node:crypto"
+import { createHmac, randomUUID } from "node:crypto"
 import { PKPass } from "passkit-generator"
 import type { Barcode } from "passkit-generator"
 
 import type { BarcodeFormat } from "@/lib/barcode/formats"
 import { TWO_D_FORMATS } from "@/lib/barcode/formats"
 import { hexToRgb, passColors } from "@/lib/pass/colors"
-import { SITE_HOST, appleConfig } from "@/lib/pass/config"
+import { SITE_HOST, SITE_URL, appleConfig } from "@/lib/pass/config"
 import { solidPng } from "@/lib/pass/png"
 import { decodePngDataUrl, type PassRequest } from "@/lib/pass/schema"
+import { passId } from "@/lib/stats/keys"
 
 type AppleFormat = Barcode["format"]
 
@@ -44,6 +45,14 @@ function appleBarcodes(format: BarcodeFormat, message: string): Barcode[] {
 
 export class AppleNotConfiguredError extends Error {}
 
+/** Wallet calls this service when a pass is added to or removed from a device. */
+export const APPLE_SERVICE_URL = `${SITE_URL}/api/passes/apple/service`
+
+/** Per-pass token Wallet sends back to the service; derived, so nothing is stored. */
+export function appleServiceToken(serialNumber: string, signerKey: string) {
+  return createHmac("sha256", `wallet-service:${signerKey}`).update(serialNumber).digest("hex")
+}
+
 export async function createApplePass(input: PassRequest): Promise<Buffer> {
   const config = appleConfig()
   if (!config) throw new AppleNotConfiguredError("Apple Wallet signing is not configured")
@@ -59,17 +68,24 @@ export async function createApplePass(input: PassRequest): Promise<Buffer> {
     },
   ]
 
+  const serialNumber = passId(input.template, randomUUID())
+  // Wallet only talks to HTTPS services, so local builds skip it.
+  const service = APPLE_SERVICE_URL.startsWith("https://")
+    ? { webServiceURL: APPLE_SERVICE_URL, authenticationToken: appleServiceToken(serialNumber, config.signerKey) }
+    : {}
+
   const passJson = {
     formatVersion: 1,
     passTypeIdentifier: config.passTypeId,
     teamIdentifier: config.teamId,
     organizationName: input.title,
     description: input.title,
-    serialNumber: randomUUID(),
+    serialNumber,
     logoText: input.title,
     backgroundColor: colors.background,
     foregroundColor: colors.foreground,
     labelColor: colors.label,
+    ...service,
     // With several fields the first (e.g. the Wi-Fi network name) is shown large.
     storeCard:
       fields.length > 1

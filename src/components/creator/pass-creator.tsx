@@ -90,7 +90,7 @@ export function PassCreator({ dict }: { dict: Dictionary }) {
 
   const buildPayload = (platform: Platform) => {
     const barcode = draft.barcode && { ...draft.barcode, format: toPlatformFormat(draft.barcode.format, platform) }
-    const base = { barcode, title, fields: draft.fields, color: state.color }
+    const base = { barcode, title, fields: draft.fields, color: state.color, template: state.template }
     // Apple shows a wide logo plus a square icon; Google masks its logo to a circle.
     return platform === "apple" ? { ...base, logo: logo?.logo, icon: logo?.icon } : { ...base, logo: logo?.icon }
   }
