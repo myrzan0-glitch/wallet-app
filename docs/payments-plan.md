@@ -51,6 +51,9 @@ Our ООО sells the event as **its own service**. The organizer is our **contra
   - **B1, unregistered individual (ГПХ):** we withhold НДФЛ 12% and pay social tax. Expensive, and frequent recurring ГПХ with the same person risks being reclassified as employment.
   - **B2, organizer registered as самозанятый or ИП:** a services contract, no withholding. They pay their own 1%.
 - **Works:** legally clean, today, with our own Payme/Click merchant account. No licence and no third-party KYC.
+- **Payout tooling:** ATMOS offers acquiring plus **ATMOS.PAYOUT**, which pays out to individuals' Uzcard/Humo cards by API from a deposit account we top up from our bank account. It is used by taxi fleets, couriers and freelance platforms.
+  - This automates the money movement.
+  - It does **not** change the legal basis or taxes: each payout still needs a contract (ГПХ, or with a самозанятый/ИП) and the matching withholding.
 - **Watch:** full ticket revenue is ours, so the turnover threshold arrives fast and then VAT applies to the full price. We also carry the refund and event risk.
 
 ### Model C: we are the organizer's agent (commission contract)
