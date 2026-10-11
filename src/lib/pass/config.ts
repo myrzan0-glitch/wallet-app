@@ -2,8 +2,7 @@ import "server-only"
 
 import { readPem } from "@/lib/pass/schema"
 
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://wallet.myrzan.com"
-export const SITE_HOST = new URL(SITE_URL).host
+export { SITE_HOST, SITE_URL } from "@/lib/pass/config-public"
 
 export function appleConfig() {
   const config = {
