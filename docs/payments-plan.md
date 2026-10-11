@@ -10,6 +10,23 @@ Most club organizers are **private individuals without a legal entity**. Two ide
 2. We become the **bridge** between attendee payments and unregistered organizers:
    attendee → our legal entity → organizer, paid under a ГПХ (civil-law) contract.
 
+### How Luma does it, and what maps to Uzbekistan
+
+Luma never touches the money.
+
+- Each organizer connects their own **Stripe** account (Stripe Connect).
+- Stripe is the licensed payment company: it verifies the organizer and pays them out within about 2 days in the US.
+- Luma's fee (5%, or 0% on Luma Plus) and Stripe's fee are deducted automatically from each payment.
+
+In the US, an organizer can be a private person because a person selling something is automatically a sole proprietor. They just report the income on their tax return, and Stripe sends the tax form (1099-K).
+
+Neither part exists here:
+
+- Stripe doesn't operate in Uzbekistan.
+- Regular income from selling needs a registration (ИП or самозанятый).
+
+The local equivalent is a **licensed payment company that splits payments** (stand-in for Stripe Connect) plus **organizers registered as самозанятый** (stand-in for the US sole proprietor). That is model A below.
+
 ## 2. Rules that shape the answer
 
 | Rule | Consequence |
