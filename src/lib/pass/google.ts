@@ -34,7 +34,7 @@ type Config = NonNullable<ReturnType<typeof googleConfig>>
 let client: JWT | undefined
 let classReady: Promise<void> | undefined
 
-function apiClient(config: Config) {
+export function apiClient(config: Config) {
   client ??= new JWT({
     email: config.account.client_email,
     key: config.account.private_key,
@@ -47,7 +47,7 @@ function apiClient(config: Config) {
 export const GOOGLE_CALLBACK_URL = `${SITE_URL}/api/passes/google/callback`
 
 /** Creates the shared generic class once; every pass styles itself per object. */
-function ensureClass(config: Config) {
+export function ensureClass(config: Config) {
   classReady ??= (async () => {
     const id = `${config.issuerId}.${config.classSuffix}`
     const api = apiClient(config)
@@ -126,19 +126,24 @@ export async function createGoogleSaveUrl(input: PassRequest): Promise<string> {
   }
 
   await apiClient(config).request({ url: `${API}/genericObject`, method: "POST", data: object })
+  return saveUrl(config, object.id)
+}
 
-  // The object already exists, so the save link only needs to reference its id.
+/** The object already exists, so the save link only needs to reference its id. */
+export async function saveUrl(config: Config, objectId: string, origins: string[] = [SITE_URL]) {
   const key = await importPKCS8(config.account.private_key, "RS256")
   const token = await new SignJWT({
     iss: config.account.client_email,
     aud: "google",
     typ: "savetowallet",
-    origins: [SITE_URL],
-    payload: { genericObjects: [{ id: object.id }] },
+    origins,
+    payload: { genericObjects: [{ id: objectId }] },
   })
     .setProtectedHeader({ alg: "RS256", typ: "JWT" })
     .setIssuedAt()
     .sign(key)
-
   return `https://pay.google.com/gp/v/save/${token}`
 }
+
+export { API as GOOGLE_API }
+export type { Config as GoogleConfig }

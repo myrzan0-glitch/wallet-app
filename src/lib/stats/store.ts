@@ -4,8 +4,7 @@ import { createHash } from "node:crypto"
 import { Redis } from "@upstash/redis"
 
 import type { Platform } from "@/lib/barcode/formats"
-import { lastDays, statDay, statFields, type StatEvent } from "@/lib/stats/keys"
-import type { Template } from "@/lib/templates"
+import { lastDays, statDay, statFields, type StatEvent, type StatTemplate } from "@/lib/stats/keys"
 
 const DAY_TTL = 400 * 86_400
 const SEEN_TTL = 2 * 365 * 86_400
@@ -24,7 +23,7 @@ function redis() {
 export const hashId = (value: string) => createHash("sha256").update(value).digest("hex").slice(0, 32)
 
 type RecordOptions = {
-  template?: Template
+  template?: StatTemplate
   /** Counts the event only once per id (a pass serial or object id). */
   once?: string
   /** Device id for the unique-devices estimate; only its hash is stored. */

@@ -35,6 +35,7 @@ src/app/[lang]/              page + layout (locale from the URL; proxy.ts redire
 src/app/api/passes/apple     POST → .pkpass (JSON body or form field `payload`)
 src/app/api/passes/google    POST → { saveUrl }
 src/app/api/passes/*/…       Apple web service + Google callback (add/remove counts)
+src/app/api/v1/passes        pass service for izipass: event tickets (Bearer key from WALLET_API_KEYS)
 src/app/stats/               private stats page (basic auth, STATS_PASSWORD)
 src/lib/stats/               counters (Upstash Redis)
 src/components/creator/      form, camera scanner, live preview
