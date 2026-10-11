@@ -13,6 +13,18 @@
 | 5 | **Separate repo and Vercel project: `izipass`.** The wallet project is reused as a service, not copied. |
 | 6 | **No duplicated secrets.** izipass calls the wallet project's API for passes. Apple and Google credentials stay only in the wallet project. |
 
+### Pricing (decided 2026-10-11; will change later)
+
+| Plan | Limits | Price |
+|---|---|---|
+| **Free** | 2 events, up to 20 participants per event | 0 |
+| **Pro** | 10 events a month, up to 100 participants per event | 299,000 so'm / month |
+| **Auto-check** add-on | receipt checked automatically | 500 so'm per participant |
+
+Free limits are read as "per month" until confirmed. Billing is manual at first (we set the plan on the organizer after they pay us); self-service billing comes later.
+
+**Domain for now:** `izipass.myrzan.com`. Own domain after traction.
+
 ## 2. How the two projects fit together
 
 ```
@@ -157,7 +169,6 @@ Every extraction, every rule result and every organizer decision is logged. That
 
 ## 9. Open items
 
-- Domain: izipass.uz / izipass.app availability to be checked.
 - Brand language for the first version: uz / ru / en, Kazakh later?
 - Telegram bot name.
 - Whether attendees may register without an account (name + phone only) as a fallback for people without Telegram or email.
