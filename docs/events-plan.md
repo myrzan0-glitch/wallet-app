@@ -68,6 +68,8 @@ This reuses what is already built: pass signing for both wallets, the camera bar
 
 ## 4. Payments: the hard part
 
+*`docs/payments-plan.md` covers this in detail: legal models, numbers per ticket and questions for a lawyer.*
+
 There are two separate problems:
 
 - **(a) Taking the payment** and knowing for sure that it happened.
